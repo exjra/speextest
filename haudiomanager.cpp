@@ -1,0 +1,250 @@
+#include "haudiomanager.h"
+
+#include <QDebug>
+
+HAudioManager::HAudioManager() :
+    mMicDevice(nullptr)
+  , mMicBuffer(nullptr)
+  , mEarBuffer(nullptr)
+  , mEchoManager(nullptr)
+{
+
+}
+
+void HAudioManager::initAudioSystem()
+{
+
+}
+
+void HAudioManager::init()
+{
+    QAudioFormat format;
+    format.setSampleRate(8000);
+    format.setChannelCount(1);
+    format.setSampleSize(16);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
+
+    if (!info.isFormatSupported(format)) {
+        qDebug() << "Default format not supported, trying to use the nearest.";
+        format = info.nearestFormat(format);
+    }
+
+    mMicDevice = new QAudioInput(format, this);
+    connect(mMicDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedMic(QAudio::State)));
+
+//    destinationFile.setFileName("out.raw");
+    if(destinationFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        mMicDevice->start(&destinationFile);
+
+    qDebug() << "Mic Buffer Size:" << mMicDevice->bufferSize();
+}
+
+void HAudioManager::deInit()
+{
+    if(mMicDevice != nullptr)
+    {
+        mMicDevice->stop();
+        destinationFile.close();
+        delete mMicDevice;
+        mMicDevice = nullptr;
+    }
+}
+
+void HAudioManager::play()
+{
+//    sourcefile.setFileName("out.raw");
+    destinationFile.open(QIODevice::ReadOnly);
+
+    QAudioFormat format;
+    // Set up the format, eg.
+    format.setSampleRate(8000);
+    format.setChannelCount(1);
+    format.setSampleSize(16);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    if (!info.isFormatSupported(format)) {
+        qDebug() << "Raw audio format not supported by backend, cannot play audio.";
+        return;
+    }
+
+    mEarDevice = new QAudioOutput(format, this);
+    connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedMic(QAudio::State)));
+    mEarDevice->start(&destinationFile);
+
+    qDebug() << "Ear Buffer Size:" << mEarDevice->bufferSize();
+}
+
+void HAudioManager::playRecord(QString pFile)
+{
+    sourcefile.setFileName(pFile);
+    if(!sourcefile.exists())
+        return;
+
+    sourcefile.open(QIODevice::ReadOnly);
+
+    QAudioFormat format;
+    // Set up the format, eg.
+    format.setSampleRate(8000);
+    format.setChannelCount(1);
+    format.setSampleSize(16);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    if (!info.isFormatSupported(format)) {
+        qDebug() << "Raw audio format not supported by backend, cannot play audio.";
+        return;
+    }
+
+    mEarDevice = new QAudioOutput(format, this);
+    connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedMic(QAudio::State)));
+    mEarDevice->start(&sourcefile);
+
+    qDebug() << "Ear Buffer Size:" << mEarDevice->bufferSize();
+}
+
+void HAudioManager::initWithAEC()
+{
+    mEchoManager = new HAECManager();
+
+    int tFilterLen = 2400;  //8000.0f * 300.0f/1000.0f); for 300ms!
+
+    mEchoManager->setFilterLen(tFilterLen);
+
+    {
+        QAudioFormat format;
+        format.setSampleRate(8000);
+        format.setChannelCount(1);
+        format.setSampleSize(16);
+        format.setCodec("audio/pcm");
+        format.setByteOrder(QAudioFormat::LittleEndian);
+        format.setSampleType(QAudioFormat::SignedInt);
+
+        QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
+
+        if (!info.isFormatSupported(format)) {
+            qDebug() << "Default format not supported, trying to use the nearest.";
+            format = info.nearestFormat(format);
+        }
+
+        mMicDevice = new QAudioInput(format, this);
+
+        mMicBuffer = new HMicBuffer();
+        mMicBuffer->setAec(mEchoManager);
+
+        if(mMicBuffer->open(QIODevice::WriteOnly | QIODevice::Truncate))
+            mMicDevice->start(mMicBuffer);
+    }
+
+    {
+        QAudioFormat format;
+        // Set up the format, eg.
+        format.setSampleRate(8000);
+        format.setChannelCount(1);
+        format.setSampleSize(16);
+        format.setCodec("audio/pcm");
+        format.setByteOrder(QAudioFormat::LittleEndian);
+        format.setSampleType(QAudioFormat::SignedInt);
+
+        QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+        if (!info.isFormatSupported(format)) {
+            qDebug() << "Raw audio format not supported by backend, cannot play audio.";
+            return;
+        }
+
+        mEarDevice = new QAudioOutput(format, this);
+
+        mEarBuffer = new HEarBuffer();
+        mEarBuffer->setAec(mEchoManager);
+        mEarBuffer->setRawFileName("C:/Users/exjra/OneDrive/Belgeler2/speextests/data/records/istiklalmarsi.raw");
+
+        if(mEarBuffer->open(QIODevice::ReadOnly))
+            mEarDevice->start(mEarBuffer);
+    }
+}
+
+void HAudioManager::deInitWithAEC()
+{
+    if(mMicDevice != nullptr)
+    {
+        mMicDevice->stop();
+        mMicBuffer->close();
+        delete mMicDevice;
+        mMicDevice = nullptr;
+    }
+
+    if(mEarDevice != nullptr)
+    {
+        mEarDevice->stop();
+        mEarBuffer->close();
+
+        delete mEarDevice;
+        mEarDevice = nullptr;
+    }
+}
+
+void HAudioManager::stopPlay()
+{
+    if(mEarDevice != nullptr)
+    {
+        mEarDevice->stop();
+        sourcefile.close();
+        delete mEarDevice;
+        mEarDevice = nullptr;
+    }
+}
+
+void HAudioManager::handleStateChangedMic(QAudio::State newState)
+{
+    switch (newState) {
+    case QAudio::StoppedState:
+        if (mMicDevice->error() != QAudio::NoError) {
+            qDebug() << "(mic) Error handling";
+        } else {
+            qDebug() << "(mic) Finished recording";
+        }
+        break;
+
+    case QAudio::ActiveState:
+        qDebug() << "(mic) Started recording - read from IO device";
+        break;
+
+    default:
+        qDebug() << "(mic) other cases as appropriate. State: " << newState;
+        break;
+    }
+}
+
+void HAudioManager::handleStateChangedEar(QAudio::State newState)
+{
+    switch (newState) {
+    case QAudio::StoppedState:
+        if (mEarDevice->error() != QAudio::NoError) {
+            qDebug() << "(ear) Error handling";
+        } else {
+            qDebug() << "(ear) Finished recording";
+        }
+        break;
+
+    case QAudio::ActiveState:
+        qDebug() << "(ear) Started recording - read from IO device";
+        break;
+
+    case QAudio::IdleState:
+        qDebug() << "(ear) finished";
+        stopPlay();
+        break;
+
+    default:
+        qDebug() << "(ear) other cases as appropriate. State: " << newState;
+        break;
+    }
+}
