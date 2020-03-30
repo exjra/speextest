@@ -44,7 +44,12 @@ void MainWindow::on_pushButton_3_clicked()
 
 void MainWindow::on_pushButton_4_clicked()
 {
-    QString tPath = QFileDialog::getOpenFileName(this, "Select a raw audio file", ".");
+    QString tPath = "";
+#if defined (__ANDROID__)
+    tPath = QFileDialog::getOpenFileName(this, "Select a raw audio file", "/mnt/sdcard/harf/aec/");
+#else
+    tPath = QFileDialog::getOpenFileName(this, "Select a raw audio file", ".");
+#endif
     if(tPath != "")
         mAudioManager->playRecord(tPath);
 }

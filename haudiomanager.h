@@ -36,6 +36,7 @@ private:
     HMicBuffer* mMicBuffer;
     HEarBuffer* mEarBuffer;
     HAECManager* mEchoManager;
+    int mBitRate;
 
 private slots:
     void handleStateChangedMic(QAudio::State newState);

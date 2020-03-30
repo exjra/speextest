@@ -10,6 +10,7 @@ HEarBuffer::HEarBuffer() :
 
 qint64 HEarBuffer::readData(char *data, qint64 maxlen)
 {
+    qDebug() << "read len:" << maxlen;
     qint64 tReadedLen = mSourceFile.read(data, maxlen);
 
     if(tReadedLen == maxlen)

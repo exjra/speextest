@@ -9,6 +9,7 @@ HAudioManager::HAudioManager() :
   , mMicBuffer(nullptr)
   , mEarBuffer(nullptr)
   , mEchoManager(nullptr)
+  , mBitRate(8000)
 {
 
 }
@@ -21,7 +22,7 @@ void HAudioManager::initAudioSystem()
 void HAudioManager::init()
 {
     QAudioFormat format;
-    format.setSampleRate(8000);
+    format.setSampleRate(mBitRate);
     format.setChannelCount(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
@@ -63,7 +64,7 @@ void HAudioManager::play()
 
     QAudioFormat format;
     // Set up the format, eg.
-    format.setSampleRate(8000);
+    format.setSampleRate(mBitRate);
     format.setChannelCount(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
@@ -93,7 +94,7 @@ void HAudioManager::playRecord(QString pFile)
 
     QAudioFormat format;
     // Set up the format, eg.
-    format.setSampleRate(8000);
+    format.setSampleRate(mBitRate);
     format.setChannelCount(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
@@ -126,13 +127,13 @@ void HAudioManager::initWithAEC()
 
     mEchoManager = new HAECManager();
 
-    int tFilterLen = 2400;  //8000.0f * 300.0f/1000.0f); for 300ms!
-
+    int tFilterLen = mBitRate * 300.0f/1000.0f;  //8000.0f * 300.0f/1000.0f); for 300ms!
+    qDebug() << "Attention! calculated filter len is:" << tFilterLen;
     mEchoManager->setFilterLen(tFilterLen);
 
     {
         QAudioFormat format;
-        format.setSampleRate(8000);
+        format.setSampleRate(mBitRate);
         format.setChannelCount(1);
         format.setSampleSize(16);
         format.setCodec("audio/pcm");
@@ -158,7 +159,7 @@ void HAudioManager::initWithAEC()
     {
         QAudioFormat format;
         // Set up the format, eg.
-        format.setSampleRate(8000);
+        format.setSampleRate(mBitRate);
         format.setChannelCount(1);
         format.setSampleSize(16);
         format.setCodec("audio/pcm");
@@ -181,6 +182,8 @@ void HAudioManager::initWithAEC()
 
         if(mEarBuffer->open(QIODevice::ReadOnly))
             mEarDevice->start(mEarBuffer);
+
+        mMicDevice->setBufferSize(mEarDevice->bufferSize());
     }
 }
 

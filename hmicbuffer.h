@@ -21,6 +21,7 @@ protected:
 private:
     HAECManager* mAec;
     QFile mOutputFile;
+    QFile mOutputMicFile;
 
     // QIODevice interface
 public:

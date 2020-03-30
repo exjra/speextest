@@ -6,8 +6,18 @@
 HMicBuffer::HMicBuffer() :
     mAec(nullptr)
 {
-    mOutputFile.setFileName("./clear_" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".raw");
+    QString tRootPath = "";
+#if defined(__ANDROID__)
+    tRootPath = "/mnt/sdcard/harf";
+#else
+    tRootPath = ".";
+#endif
+    qint64 tTimeBuff = QDateTime::currentMSecsSinceEpoch();
+    mOutputFile.setFileName(tRootPath + "/clear_" + QString::number(tTimeBuff) + ".raw");
     mOutputFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+
+    mOutputMicFile.setFileName(tRootPath + "/mic_" + QString::number(tTimeBuff) + ".raw");
+    mOutputMicFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
 }
 
 qint64 HMicBuffer::readData(char *data, qint64 maxlen)
@@ -18,9 +28,12 @@ qint64 HMicBuffer::readData(char *data, qint64 maxlen)
 
 qint64 HMicBuffer::writeData(const char *data, qint64 len)
 {
+    qDebug() << "write len:" << len;
     mAec->init(len/2);
 
     mAec->onCapture(data);
+
+    mOutputMicFile.write(data, mAec->getFrameSize()*2);
 
     char* tCleanBuffer = mAec->getCleanBuffer();
 
@@ -39,6 +52,13 @@ void HMicBuffer::close()
         mOutputFile.close();
 
         qDebug() << "the clean file finalized";
+    }
+
+    if(mOutputMicFile.isOpen())
+    {
+        mOutputMicFile.close();
+
+        qDebug() << "the mic file finalized";
     }
 
     QBuffer::close();

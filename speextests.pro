@@ -44,8 +44,21 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-LIBS += -L$$PWD/../speex-qt -lspeex
-INCLUDEPATH += $$PWD/../speex-qt/include
+win32 {
+    LIBS += -L$$PWD/../speex-qt -lspeex
+    INCLUDEPATH += $$PWD/../speex-qt/include
 
-LIBS += -L$$PWD/../speexdsp-qt -lspeexdsp
-INCLUDEPATH += $$PWD/../speexdsp-qt/include
+    LIBS += -L$$PWD/../speexdsp-qt -lspeexdsp
+    INCLUDEPATH += $$PWD/../speexdsp-qt/include
+}
+
+android {
+    LIBS += -L$$PWD/../speex-qt/android -lspeex
+    INCLUDEPATH += $$PWD/../speex-qt/include
+
+    LIBS += -L$$PWD/../speexdsp-qt/android -lspeexdsp
+    INCLUDEPATH += $$PWD/../speexdsp-qt/include
+}
+
+#include($$(HARF_DIR)/lib/include/path.pri)
+#include($$(HARF_DIR)/lib/include/speex.pri)

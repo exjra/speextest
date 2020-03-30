@@ -97,3 +97,8 @@ void HAECManager::resetAec()
 {
     speex_echo_state_reset(mEchoState);
 }
+
+void HAECManager::setSamplingRate(int samplingRate)
+{
+    mSamplingRate = samplingRate;
+}

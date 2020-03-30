@@ -20,6 +20,7 @@ public:
     bool initialized();
 
     void setFilterLen(int filterLen);
+    void setSamplingRate(int samplingRate);
 
     char* getCleanBuffer();
 
@@ -36,6 +37,7 @@ private:
     spx_int16_t* mOutBuffer;
     int mFrameSize;
     int mFilterLen;
+    int mSamplingRate;
     bool mInitialized;
 };
 
