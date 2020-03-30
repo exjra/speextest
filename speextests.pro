@@ -44,5 +44,8 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-LIBS += -LE:/Projects/lib/speex/win32/lib -lspeex -lspeexdsp
-INCLUDEPATH += E:/Projects/lib/speex/win32/include
+LIBS += -L$$PWD/../speex-qt -lspeex
+INCLUDEPATH += $$PWD/../speex-qt/include
+
+LIBS += -L$$PWD/../speexdsp-qt -lspeexdsp
+INCLUDEPATH += $$PWD/../speexdsp-qt/include

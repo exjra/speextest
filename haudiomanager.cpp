@@ -1,6 +1,8 @@
 #include "haudiomanager.h"
 
 #include <QDebug>
+#include <QFileDialog>
+#include <QSettings>
 
 HAudioManager::HAudioManager() :
     mMicDevice(nullptr)
@@ -113,6 +115,15 @@ void HAudioManager::playRecord(QString pFile)
 
 void HAudioManager::initWithAEC()
 {
+    QSettings tSettings;
+
+    QString tInputAudioFilePath = QFileDialog::getOpenFileName(nullptr, "Select input raw audio file", tSettings.value("inputfilepath").toString());
+    if(tInputAudioFilePath == nullptr)
+    {
+        qDebug() << "Input raw audio file must be selected!";
+        return;
+    }
+
     mEchoManager = new HAECManager();
 
     int tFilterLen = 2400;  //8000.0f * 300.0f/1000.0f); for 300ms!
@@ -164,7 +175,9 @@ void HAudioManager::initWithAEC()
 
         mEarBuffer = new HEarBuffer();
         mEarBuffer->setAec(mEchoManager);
-        mEarBuffer->setRawFileName("C:/Users/exjra/OneDrive/Belgeler2/speextests/data/records/istiklalmarsi.raw");
+        mEarBuffer->setRawFileName(tInputAudioFilePath);
+
+        tSettings.setValue("inputfilepath", tInputAudioFilePath);
 
         if(mEarBuffer->open(QIODevice::ReadOnly))
             mEarDevice->start(mEarBuffer);
