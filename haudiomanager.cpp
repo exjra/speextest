@@ -183,7 +183,7 @@ void HAudioManager::initWithAEC()
         if(mEarBuffer->open(QIODevice::ReadOnly))
             mEarDevice->start(mEarBuffer);
 
-        mMicDevice->setBufferSize(mEarDevice->bufferSize());
+//        mEarDevice->setBufferSize(mMicDevice->bufferSize());
     }
 }
 
