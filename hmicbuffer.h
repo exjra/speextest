@@ -23,6 +23,8 @@ private:
     QFile mOutputFile;
     QFile mOutputMicFile;
 
+    int mByPassFrameCount;
+    int mByPassFrameSize;
     // QIODevice interface
 public:
     void close();

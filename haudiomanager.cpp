@@ -125,12 +125,6 @@ void HAudioManager::initWithAEC()
         return;
     }
 
-    mEchoManager = new HAECManager();
-
-    int tFilterLen = mBitRate * 300.0f/1000.0f;  //8000.0f * 300.0f/1000.0f); for 300ms!
-    qDebug() << "Attention! calculated filter len is:" << tFilterLen;
-    mEchoManager->setFilterLen(tFilterLen);
-
     {
         QAudioFormat format;
         format.setSampleRate(mBitRate);
@@ -150,7 +144,6 @@ void HAudioManager::initWithAEC()
         mMicDevice = new QAudioInput(format, this);
 
         mMicBuffer = new HMicBuffer();
-        mMicBuffer->setAec(mEchoManager);
 
         if(mMicBuffer->open(QIODevice::WriteOnly | QIODevice::Truncate))
             mMicDevice->start(mMicBuffer);
@@ -175,7 +168,6 @@ void HAudioManager::initWithAEC()
         mEarDevice = new QAudioOutput(format, this);
 
         mEarBuffer = new HEarBuffer();
-        mEarBuffer->setAec(mEchoManager);
         mEarBuffer->setRawFileName(tInputAudioFilePath);
 
         tSettings.setValue("inputfilepath", tInputAudioFilePath);
@@ -185,6 +177,15 @@ void HAudioManager::initWithAEC()
 
 //        mEarDevice->setBufferSize(mMicDevice->bufferSize());
     }
+
+    mEchoManager = new HAECManager();
+
+    int tFilterLen = mBitRate * 300.0f/1000.0f;  //8000.0f * 300.0f/1000.0f); for 300ms!
+    qDebug() << "Attention! calculated filter len is:" << tFilterLen;
+    mEchoManager->setFilterLen(tFilterLen);
+
+    mEarBuffer->setAec(mEchoManager);
+    mMicBuffer->setAec(mEchoManager);
 }
 
 void HAudioManager::deInitWithAEC()

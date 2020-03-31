@@ -10,11 +10,21 @@ HEarBuffer::HEarBuffer() :
 
 qint64 HEarBuffer::readData(char *data, qint64 maxlen)
 {
-    qDebug() << "read len:" << maxlen;
-    qint64 tReadedLen = mSourceFile.read(data, maxlen);
+    if(mAec == nullptr)
+    {
+        memset(data, 0, maxlen);
+        return maxlen;
+    }
 
-    if(tReadedLen == maxlen)
+    QByteArray tReadedData = mSourceFile.read(maxlen);
+    mMainBuffer.append(tReadedData);
+
+    if(mMainBuffer.length() >= maxlen)
+    {
+        memcpy(data, mMainBuffer.data(), maxlen);
         mAec->onPlayback(data);
+        mMainBuffer.remove(0, maxlen);
+    }
     else
     {
         mSourceFile.close();
@@ -30,8 +40,6 @@ qint64 HEarBuffer::readData(char *data, qint64 maxlen)
     }
 
     return maxlen;
-    //    qDebug() << "read len:" << maxlen;
-    //    return QBuffer::readData(data, maxlen);
 }
 
 qint64 HEarBuffer::writeData(const char *data, qint64 len)

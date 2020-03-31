@@ -5,6 +5,8 @@
 
 HMicBuffer::HMicBuffer() :
     mAec(nullptr)
+  , mByPassFrameSize(80)
+  , mByPassFrameCount(0)
 {
     QString tRootPath = "";
 #if defined(__ANDROID__)
@@ -22,26 +24,35 @@ HMicBuffer::HMicBuffer() :
 
 qint64 HMicBuffer::readData(char *data, qint64 maxlen)
 {
-    qDebug() << "read len:" << maxlen;
     return QBuffer::readData(data, maxlen);
 }
 
 qint64 HMicBuffer::writeData(const char *data, qint64 len)
 {
-    qDebug() << "write len:" << len;
+    if(mAec == nullptr) return len;
+
     mAec->init(len/2);
 
     mAec->onCapture(data);
 
-    mOutputMicFile.write(data, mAec->getFrameSize()*2);
+    if(mByPassFrameCount < mByPassFrameSize)
+    {
+        mByPassFrameCount++;
+        return len;
+    }
+    else
+    {
+        qDebug() << "write len:" << len;
+        mOutputMicFile.write(data, mAec->getFrameSize()*2);
 
-    char* tCleanBuffer = mAec->getCleanBuffer();
+        char* tCleanBuffer = mAec->getCleanBuffer();
 
-    if(tCleanBuffer != nullptr)
-        mOutputFile.write(tCleanBuffer, mAec->getFrameSize()*2);
+        if(tCleanBuffer != nullptr)
+            mOutputFile.write(tCleanBuffer, mAec->getFrameSize()*2);
 
-    return len;
-//    qDebug() << "write len:" << len;
+        return len;
+    }
+    //    qDebug() << "write len:" << len;
     //    return QBuffer::writeData(data, len);
 }
 

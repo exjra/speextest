@@ -25,6 +25,8 @@ private:
     QFile mSourceFile;
 
     QString mRawFile;
+
+    QByteArray mMainBuffer;
 };
 
 #endif // HEARBUFFER_H
