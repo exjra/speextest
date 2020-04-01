@@ -15,10 +15,12 @@ HMicBuffer::HMicBuffer() :
     tRootPath = ".";
 #endif
     qint64 tTimeBuff = QDateTime::currentMSecsSinceEpoch();
-    mOutputFile.setFileName(tRootPath + "/clear_" + QString::number(tTimeBuff) + ".raw");
+//    mOutputFile.setFileName(tRootPath + "/clear_" + QString::number(tTimeBuff) + ".raw");
+    mOutputFile.setFileName(tRootPath + "/clear.raw");
     mOutputFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
 
-    mOutputMicFile.setFileName(tRootPath + "/mic_" + QString::number(tTimeBuff) + ".raw");
+//    mOutputMicFile.setFileName(tRootPath + "/mic_" + QString::number(tTimeBuff) + ".raw");
+    mOutputMicFile.setFileName(tRootPath + "/mic.raw");
     mOutputMicFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
 }
 
@@ -35,25 +37,15 @@ qint64 HMicBuffer::writeData(const char *data, qint64 len)
 
     mAec->onCapture(data);
 
-    if(mByPassFrameCount < mByPassFrameSize)
-    {
-        mByPassFrameCount++;
-        return len;
-    }
-    else
-    {
-        qDebug() << "write len:" << len;
-        mOutputMicFile.write(data, mAec->getFrameSize()*2);
+    qDebug() << "write len:" << len;
+    mOutputMicFile.write(data, mAec->getFrameSize()*2);
 
-        char* tCleanBuffer = mAec->getCleanBuffer();
+    char* tCleanBuffer = mAec->getCleanBuffer();
 
-        if(tCleanBuffer != nullptr)
-            mOutputFile.write(tCleanBuffer, mAec->getFrameSize()*2);
+    if(tCleanBuffer != nullptr)
+        mOutputFile.write(tCleanBuffer, mAec->getFrameSize()*2);
 
-        return len;
-    }
-    //    qDebug() << "write len:" << len;
-    //    return QBuffer::writeData(data, len);
+    return len;
 }
 
 void HMicBuffer::close()

@@ -28,6 +28,10 @@ public:
     void initWithAEC();
     void deInitWithAEC();
 
+    void setBitRate(int bitRate);
+    void setFrameLenMs(int frameLenMs);
+
+    void resetAudioDevices();
 private:
     QAudioInput* mMicDevice;
     QAudioOutput* mEarDevice;
@@ -37,6 +41,7 @@ private:
     HEarBuffer* mEarBuffer;
     HAECManager* mEchoManager;
     int mBitRate;
+    int mFrameLenMs;
 
 private slots:
     void handleStateChangedMic(QAudio::State newState);

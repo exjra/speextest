@@ -12,10 +12,10 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    HAudioManager* mEchoCanceller = new HAudioManager;
+    HAudioManager* mAudioManager = new HAudioManager;
 
     MainWindow w;
-    w.setAec(mEchoCanceller);
+    w.setAec(mAudioManager);
     w.show();
 
     return a.exec();

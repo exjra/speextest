@@ -4,6 +4,7 @@
 #include <QDataStream>
 #include <QBuffer>
 #include <QFile>
+#include <QElapsedTimer>
 
 #include "haecmanager.h"
 
@@ -13,6 +14,8 @@ public:
     HMicBuffer();
 
     void setAec(HAECManager *aec);
+
+    void close();
 
 protected:
     qint64 readData(char *data, qint64 maxlen);
@@ -25,9 +28,8 @@ private:
 
     int mByPassFrameCount;
     int mByPassFrameSize;
-    // QIODevice interface
-public:
-    void close();
+
+    QElapsedTimer mElapsed;
 };
 
 #endif // HMICBUFFER_H

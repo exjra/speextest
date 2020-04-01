@@ -4,6 +4,7 @@
 #include <QDataStream>
 #include <QBuffer>
 #include <QFile>
+#include <QElapsedTimer>
 
 #include "haecmanager.h"
 
@@ -27,6 +28,8 @@ private:
     QString mRawFile;
 
     QByteArray mMainBuffer;
+
+    QElapsedTimer mElapsed;
 };
 
 #endif // HEARBUFFER_H

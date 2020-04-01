@@ -38,7 +38,8 @@ bool HDevice::open(QIODevice::OpenMode mode)
     tRootPath = ".";
 #endif
 
-    mFile.setFileName(tRootPath + "/record_" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".raw");
+//    mFile.setFileName(tRootPath + "/record_" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".raw");
+    mFile.setFileName(tRootPath + "/record.raw");
 
     mFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
 

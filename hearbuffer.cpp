@@ -15,28 +15,36 @@ qint64 HEarBuffer::readData(char *data, qint64 maxlen)
         memset(data, 0, maxlen);
         return maxlen;
     }
+    else if(!mAec->initialized())
+    {
+        memset(data, 0, maxlen);
+        return maxlen;
+    }
 
     QByteArray tReadedData = mSourceFile.read(maxlen);
     mMainBuffer.append(tReadedData);
 
     if(mMainBuffer.length() >= maxlen)
-    {
         memcpy(data, mMainBuffer.data(), maxlen);
-        mAec->onPlayback(data);
-        mMainBuffer.remove(0, maxlen);
-    }
-    else
+
+    int tCount = 0;
+    while(true)
     {
-        mSourceFile.close();
+        if(mMainBuffer.length() >= mAec->getFrameSize()*2)
+        {
+//            memcpy(data, mMainBuffer.data(), maxlen);
+            mAec->onPlayback(data);
+            mMainBuffer.remove(0, mAec->getFrameSize()*2);
+            qDebug() << "Push ear:" << QString::number(tCount) << " Len: " << maxlen;
+            tCount++;
+        }
+        else
+        {
+//            mAec->resetAec();
+            //        mAec->onPlayback(data);
 
-        mSourceFile.open(QIODevice::ReadOnly);
-
-        mSourceFile.read(data, maxlen);
-
-        mAec->resetAec();
-        mAec->onPlayback(data);
-
-        qDebug() << "source file re-opened";
+            break;
+        }
     }
 
     return maxlen;
