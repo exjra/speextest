@@ -10,6 +10,12 @@ MainWindow::MainWindow(QWidget *parent) :
   , mAudioManager(nullptr)
 {
     ui->setupUi(this);
+
+    ui->spinBox->setValue(200);
+#if defined (__ANDROID__)
+    ui->spinBox->setValue(450);
+#endif
+
 }
 
 MainWindow::~MainWindow()

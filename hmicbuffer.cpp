@@ -37,13 +37,14 @@ qint64 HMicBuffer::writeData(const char *data, qint64 len)
 
     mAec->onCapture(data);
 
-    qDebug() << "write len:" << len;
     mOutputMicFile.write(data, mAec->getFrameSize()*2);
 
     char* tCleanBuffer = mAec->getCleanBuffer();
 
     if(tCleanBuffer != nullptr)
         mOutputFile.write(tCleanBuffer, mAec->getFrameSize()*2);
+
+    qDebug() << "mic:" << len << "/" << mAec->getFrameSize()*2;
 
     return len;
 }

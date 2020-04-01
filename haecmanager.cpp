@@ -40,38 +40,62 @@ void HAECManager::init(int pFrameSize, int pFilterLength)
     mPreprocess = speex_preprocess_state_init(mFrameSize, mSamplingRate);
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_ECHO_STATE, mEchoState);
 
-//    //////////////////////
-//    int i=1;
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DENOISE, &i);
-
-//    int noiseSuppress = -25;
-
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_NOISE_SUPPRESS, &noiseSuppress); //设置噪声的dB
-
-
-
-//    i=0;
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_AGC, &i);  //增益
-//    i=8000;
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_AGC_LEVEL, &i);
+    int i=1;
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DENOISE, &i);
+    i=0;
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_AGC, &i);
+    i=8000;
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_AGC_LEVEL, &i);
+    i=0;
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB, &i);
+    float f=.0;
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
+    f=.0;
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
 
 
-//    //静音检测
+    int vad = 1;
+    int vadProbStart = 80;
+    int vadProbContinue = 65;
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_VAD, &vad);
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_START , &vadProbStart); //Set probability required for the VAD to go from silence to voice
+    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &vadProbContinue); //Set probability required for the VAD to stay in the voice state (integer percent)
 
-//    int vad = 1;
-//    int vadProbStart = 80;
-//    int vadProbContinue = 65;
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_VAD, &vad); //静音检测
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_START , &vadProbStart); //Set probability required for the VAD to go from silence to voice
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &vadProbContinue); //Set probability required for the VAD to stay in the voice state (integer percent)
+    //    int i=1;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DENOISE, &i);
 
-//    i=0;
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB, &i);
-//    float f=.0;
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
-//    f=.0;
-//    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
-//    //////////////////////
+    //    //////////////////////
+    //    int i=1;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DENOISE, &i);
+
+    //    int noiseSuppress = -25;
+
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_NOISE_SUPPRESS, &noiseSuppress); //设置噪声的dB
+
+
+
+    //    i=0;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_AGC, &i);  //增益
+    //    i=8000;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_AGC_LEVEL, &i);
+
+
+    //    //静音检测
+
+    //    int vad = 1;
+    //    int vadProbStart = 80;
+    //    int vadProbContinue = 65;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_VAD, &vad); //静音检测
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_START , &vadProbStart); //Set probability required for the VAD to go from silence to voice
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &vadProbContinue); //Set probability required for the VAD to stay in the voice state (integer percent)
+
+    //    i=0;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB, &i);
+    //    float f=.0;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
+    //    f=.0;
+    //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
+    //    //////////////////////
     mInitialized = true;
 
     qDebug() << "1 AEC Props -----------------------";
@@ -106,7 +130,7 @@ void HAECManager::onCapture(const char *data)
     memcpy((char*) mMicBuffer, data, mFrameSize*2);
 
     speex_echo_capture(mEchoState, mMicBuffer, mOutBuffer);
-    speex_preprocess_run(mPreprocess, mOutBuffer);
+    qDebug() << "VAD:" << speex_preprocess_run(mPreprocess, mOutBuffer);
     //    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
 }
 

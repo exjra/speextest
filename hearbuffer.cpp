@@ -8,6 +8,28 @@ HEarBuffer::HEarBuffer() :
 
 }
 
+//qint64 HEarBuffer::readData(char *data, qint64 maxlen)
+//{
+//    if(mAec == nullptr)
+//    {
+//        memset(data, 0, maxlen);
+//        return maxlen;
+//    }
+//    else if(!mAec->initialized())
+//    {
+//        memset(data, 0, maxlen);
+//        return maxlen;
+//    }
+
+//    mSourceFile.read(data, mAec->getFrameSize()*2);
+//    mAec->onPlayback(data);
+
+//    qDebug() << "ear:" << mAec->getFrameSize()*2 << " / " << maxlen;
+
+//    return maxlen;
+//}
+
+
 qint64 HEarBuffer::readData(char *data, qint64 maxlen)
 {
     if(mAec == nullptr)
@@ -32,23 +54,19 @@ qint64 HEarBuffer::readData(char *data, qint64 maxlen)
     {
         if(mMainBuffer.length() >= mAec->getFrameSize()*2)
         {
-//            memcpy(data, mMainBuffer.data(), maxlen);
-            mAec->onPlayback(data);
+            mAec->onPlayback(mMainBuffer.data());
             mMainBuffer.remove(0, mAec->getFrameSize()*2);
-            qDebug() << "Push ear:" << QString::number(tCount) << " Len: " << maxlen;
             tCount++;
         }
         else
-        {
-//            mAec->resetAec();
-            //        mAec->onPlayback(data);
-
             break;
-        }
     }
+
+    qDebug() << "ear:" << mAec->getFrameSize()*2 << " / " << maxlen;
 
     return maxlen;
 }
+
 
 qint64 HEarBuffer::writeData(const char *data, qint64 len)
 {
