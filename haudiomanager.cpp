@@ -199,6 +199,8 @@ void HAudioManager::initWithAEC()
 
     mEarBuffer->setAec(mEchoManager);
     mMicBuffer->setAec(mEchoManager);
+
+    qDebug() << "ready @1";
 }
 
 void HAudioManager::deInitWithAEC()

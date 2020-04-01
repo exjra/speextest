@@ -79,6 +79,7 @@ void HAECManager::init(int pFrameSize, int pFilterLength)
     qDebug() << "Filter Len:" << mFilterLen;
     qDebug() << "Sampling Rate:" << mSamplingRate;
     qDebug() << "---------------------------------";
+
     resetAec();
 }
 
