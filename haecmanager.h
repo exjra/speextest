@@ -10,8 +10,7 @@ class HAECManager
 public:
     HAECManager();
 
-    void init(int pFrameSize);
-    void init(int pFrameSize, int pFilterLength);
+    void init();
     void deInit();
 
     void onPlayback(char* data);
@@ -19,28 +18,56 @@ public:
 
     bool initialized();
 
-    void setFilterLen(int filterLen);
     void setSamplingRate(int samplingRate);
+    int getSamplingRate() const;
 
     char* getCleanBuffer();
-
     int getFrameSize();
+
+    void setEarReady(bool earReady);
+    bool getEarReady() const;
+
+    int getFilterLenMs() const;
+    void setFilterLenMs(int filterLenMs);
+
+    int getFilterLen() const;
 
     void resetAec();
 
-    int getSamplingRate() const;
+    int getFrameSizeMs() const;
+    void setFrameSizeMs(int frameSizeMs);
+
+    int getInternalDelayLenMs() const;
+    void setInternalDelayLenMs(int internalDelayLenMs);
+
+    int getInternalDelayLen() const;
+    void setInternalDelayLen(int internalDelayLen);
+
+    int calculateAudioBufferLength();
 
 private:
+    void initPrivate(int pFrameSize, int pFilterLength, int pInternalDelayLenght);
+
     SpeexEchoState *mEchoState;
     SpeexPreprocessState *mPreprocess;
 
     spx_int16_t* mEarBuffer;
     spx_int16_t* mMicBuffer;
     spx_int16_t* mOutBuffer;
+
     int mFrameSize;
+    int mFrameSizeMs;
+
     int mFilterLen;
+    int mFilterLenMs;
+
+    int mInternalDelayLen;
+    int mInternalDelayLenMs;
+
     int mSamplingRate;
+
     bool mInitialized;
+    bool mEarReady;
 };
 
 #endif // HAECMANAGER_H

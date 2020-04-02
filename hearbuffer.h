@@ -28,10 +28,12 @@ private:
     QString mRawFile;
 
     QByteArray mMainBuffer;
+    QByteArray mDelayBuffer;
+    char* mDelayBuff;
 
     QElapsedTimer mElapsed;
 
-    bool mFirstTime = true;
+    bool mFirstTime;
 };
 
 #endif // HEARBUFFER_H

@@ -3,14 +3,16 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QSettings>
+#include <QThread>
 
 HAudioManager::HAudioManager() :
     mMicDevice(nullptr)
   , mMicBuffer(nullptr)
   , mEarBuffer(nullptr)
   , mEchoManager(nullptr)
-  , mBitRate(8000)
-  , mFrameLenMs(300)
+  , mSampleRate(8000)
+  , mMicVolume(1.0)
+  , mSpeakerVolume(1.0)
 {
 
 }
@@ -23,7 +25,7 @@ void HAudioManager::initAudioSystem()
 void HAudioManager::init()
 {
     QAudioFormat format;
-    format.setSampleRate(mBitRate);
+    format.setSampleRate(mSampleRate);
     format.setChannelCount(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
@@ -65,7 +67,7 @@ void HAudioManager::play()
 
     QAudioFormat format;
     // Set up the format, eg.
-    format.setSampleRate(mBitRate);
+    format.setSampleRate(mSampleRate);
     format.setChannelCount(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
@@ -95,7 +97,7 @@ void HAudioManager::playRecord(QString pFile)
 
     QAudioFormat format;
     // Set up the format, eg.
-    format.setSampleRate(mBitRate);
+    format.setSampleRate(mSampleRate);
     format.setChannelCount(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
@@ -109,7 +111,7 @@ void HAudioManager::playRecord(QString pFile)
     }
 
     mEarDevice = new QAudioOutput(format, this);
-    mEarDevice->setBufferSize(mBitRate*2/10);
+    mEarDevice->setBufferSize((mSampleRate/10)*2);
     mEarDevice->setVolume(0.7);
     connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedMic(QAudio::State)));
     mEarDevice->start(&sourcefile);
@@ -117,12 +119,14 @@ void HAudioManager::playRecord(QString pFile)
     qDebug() << "Ear Buffer Size:" << mEarDevice->bufferSize();
 }
 
-void HAudioManager::initWithAEC()
+void HAudioManager::initWithAEC(int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs)
 {
     mEchoManager = new HAECManager();
-    int tFilterLen = mBitRate * ((float) mFrameLenMs) / 1000.0f;
-    mEchoManager->setFilterLen(tFilterLen);
-    mEchoManager->setSamplingRate(mBitRate);
+
+    mEchoManager->setFrameSizeMs(pFrameLenMs);
+    mEchoManager->setFilterLenMs(pFilterLenMs);
+    mEchoManager->setInternalDelayLenMs(pInternalDelayMs);
+    mEchoManager->setSamplingRate(mSampleRate);
 
     QSettings tSettings;
 
@@ -143,7 +147,7 @@ void HAudioManager::initWithAEC()
 
     {
         QAudioFormat format;
-        format.setSampleRate(mBitRate);
+        format.setSampleRate(mSampleRate);
         format.setChannelCount(1);
         format.setSampleSize(16);
         format.setCodec("audio/pcm");
@@ -156,10 +160,13 @@ void HAudioManager::initWithAEC()
             format = info.nearestFormat(format);
         }
 
-        mMicDevice = new QAudioInput(format, this);
-        mMicDevice->setBufferSize(mBitRate  * 200 / 1000);
-        mMicDevice->setVolume(0.8);
+        QThread* tThread = new QThread();
+        mMicDevice = new QAudioInput(format, tThread);
+        mMicDevice->setBufferSize(mEchoManager->calculateAudioBufferLength());
+        mMicDevice->setVolume(mMicVolume);
         connect(mMicDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedMic(QAudio::State)));
+
+        tThread->start();
 
         mMicBuffer = new HMicBuffer();
 
@@ -170,7 +177,7 @@ void HAudioManager::initWithAEC()
     {
         QAudioFormat format;
         // Set up the format, eg.
-        format.setSampleRate(mBitRate);
+        format.setSampleRate(mSampleRate);
         format.setChannelCount(1);
         format.setSampleSize(16);
         format.setCodec("audio/pcm");
@@ -183,10 +190,13 @@ void HAudioManager::initWithAEC()
             return;
         }
 
-        mEarDevice = new QAudioOutput(format, this);
-        mEarDevice->setBufferSize(mBitRate  * 200 / 1000);
-        mEarDevice->setVolume(0.7);
+        QThread* tThread = new QThread();
+        mEarDevice = new QAudioOutput(format, tThread);
+        mEarDevice->setBufferSize(mEchoManager->calculateAudioBufferLength());
+        mEarDevice->setVolume(mSpeakerVolume);
         connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedEar(QAudio::State)));
+
+        tThread->start();
 
         mEarBuffer = new HEarBuffer();
         mEarBuffer->setRawFileName(tInputAudioFilePath);
@@ -199,8 +209,6 @@ void HAudioManager::initWithAEC()
 
     mEarBuffer->setAec(mEchoManager);
     mMicBuffer->setAec(mEchoManager);
-
-    qDebug() << "ready @6";
 }
 
 void HAudioManager::deInitWithAEC()
@@ -223,14 +231,9 @@ void HAudioManager::deInitWithAEC()
     }
 }
 
-void HAudioManager::setBitRate(int bitRate)
+void HAudioManager::setSampleRate(int bitRate)
 {
-    mBitRate = bitRate;
-}
-
-void HAudioManager::setFrameLenMs(int frameLenMs)
-{
-    mFrameLenMs = frameLenMs;
+    mSampleRate = bitRate;
 }
 
 void HAudioManager::resetAudioDevices()
@@ -251,6 +254,12 @@ void HAudioManager::resetAudioDevices()
 void HAudioManager::initForInternalDelay()
 {
 
+}
+
+void HAudioManager::setVolumes(float pMic, float pSpeaker)
+{
+    mMicVolume = pMic;
+    mSpeakerVolume = pSpeaker;
 }
 
 void HAudioManager::stopPlay()
@@ -280,7 +289,7 @@ void HAudioManager::handleStateChangedMic(QAudio::State newState)
         break;
 
     case QAudio::ActiveState:
-        tSender->setBufferSize(4410);
+//        tSender->setBufferSize(4410);
         qDebug() << "2 (mic) Started recording - read from IO device";
 
         qDebug() << "Input Format -----------------------------";
@@ -320,7 +329,7 @@ void HAudioManager::handleStateChangedEar(QAudio::State newState)
         break;
 
     case QAudio::ActiveState:
-        tSender->setBufferSize(4410);
+//        tSender->setBufferSize(4410);
         qDebug() << "2 (ear) Started recording - read from IO device";
 
         qDebug() << "Output Format ----------------------------";

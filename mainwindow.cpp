@@ -3,6 +3,8 @@
 
 #include <QFileDialog>
 #include <QString>
+#include <QDebug>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -11,11 +13,40 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->spinBox->setValue(200);
-#if defined (__ANDROID__)
-    ui->spinBox->setValue(450);
-#endif
+    QSettings tSettings;
 
+    int tVal = tSettings.value("comboBox").toInt();
+    if(tVal > ui->comboBox->count() || tVal < 0)
+        tVal = 0;
+    ui->comboBox->setCurrentIndex(tVal);
+
+    tVal = tSettings.value("spinBox_3").toInt();
+    if(tVal > ui->spinBox_3->maximum() || tVal < ui->spinBox_3->minimum())
+        tVal = -1;
+    ui->spinBox_3->setValue(tVal);
+
+    tVal = tSettings.value("spinBox").toInt();
+    if(tVal > ui->spinBox->maximum() || tVal < ui->spinBox->minimum())
+        tVal = -1;
+    ui->spinBox->setValue(tVal);
+
+    tVal = tSettings.value("spinBox_2").toInt();
+    if(tVal > ui->spinBox_2->maximum() || tVal < ui->spinBox_2->minimum())
+        tVal = -1;
+    ui->spinBox_2->setValue(tVal);
+
+    tVal = tSettings.value("spinBox_4").toInt();
+    if(tVal > ui->spinBox_4->maximum() || tVal < ui->spinBox_4->minimum())
+        tVal = 80;
+    ui->spinBox_4->setValue(tVal);
+
+    tVal = tSettings.value("spinBox_5").toInt();
+    if(tVal > ui->spinBox_5->maximum() || tVal < ui->spinBox_5->minimum())
+        tVal = 80;
+    ui->spinBox_5->setValue(tVal);
+
+    setWindowTitle("ready @11");
+    qDebug() << windowTitle();
 }
 
 MainWindow::~MainWindow()
@@ -30,7 +61,7 @@ void MainWindow::setAec(HAudioManager *aec)
 
 void MainWindow::on_pushButton_clicked()
 {
-    mAudioManager->setBitRate(ui->comboBox->currentText().toInt());
+    mAudioManager->setSampleRate(ui->comboBox->currentText().toInt());
 
     if(mAudioManager == nullptr)
         return;
@@ -73,7 +104,7 @@ void MainWindow::on_pushButton_4_clicked()
 
     if(tPath != "")
     {
-        mAudioManager->setBitRate(ui->comboBox->currentText().toInt());
+        mAudioManager->setSampleRate(ui->comboBox->currentText().toInt());
         mAudioManager->playRecord(tPath);
     }
 }
@@ -83,10 +114,23 @@ void MainWindow::on_pushButton_5_clicked()
     if(mAudioManager == nullptr)
         return;
 
-    mAudioManager->setBitRate(ui->comboBox->currentText().toInt());
-    mAudioManager->setFrameLenMs(ui->spinBox->value());
+    QSettings tSettings;
 
-    mAudioManager->initWithAEC();
+    tSettings.setValue("comboBox", ui->comboBox->currentIndex());
+    tSettings.setValue("spinBox_4", ui->spinBox_4->value());
+    tSettings.setValue("spinBox_5", ui->spinBox_5->value());
+    tSettings.setValue("spinBox_3", ui->spinBox_3->value());
+    tSettings.setValue("spinBox", ui->spinBox->value());
+    tSettings.setValue("spinBox_2", ui->spinBox_2->value());
+
+    mAudioManager->setSampleRate(ui->comboBox->currentText().toInt());
+    mAudioManager->setVolumes(ui->spinBox_4->value() * 0.01f, ui->spinBox_5->value() * 0.01f);
+
+    int tFrameLen = ui->spinBox_3->value();
+    int tFilterLen = ui->spinBox->value();
+    int tInternalDelay = ui->spinBox_2->value();
+
+    mAudioManager->initWithAEC(tFrameLen, tFilterLen, tInternalDelay);
 }
 
 void MainWindow::on_pushButton_6_clicked()
@@ -95,10 +139,4 @@ void MainWindow::on_pushButton_6_clicked()
         return;
 
     mAudioManager->deInitWithAEC();
-}
-
-void MainWindow::on_pushButton_7_clicked()
-{
-    if(mAudioManager != nullptr)
-        mAudioManager->initForInternalDelay();
 }

@@ -9,28 +9,63 @@ HAECManager::HAECManager() :
   , mOutBuffer(nullptr)
   , mMicBuffer(nullptr)
   , mInitialized(false)
+  , mEarReady(false)
+  , mFilterLenMs(-1)
+  , mFrameSizeMs(-1)
+  , mInternalDelayLenMs(-1)
 {
 
 }
 
-void HAECManager::init(int pFrameSize)
+void HAECManager::init()
 {
     if(mInitialized)
         return;
+
+    //calculate frame len (in samples)
+    int tTempFrameLen = 0;
+    if(mFrameSizeMs == -1){
 #if defined (__ANDROID__)
-    init(pFrameSize, 10*pFrameSize);
+        mFrameSizeMs = 50;
 #else
-    init(pFrameSize, mSamplingRate  * 128 / 1000);
+        mFrameSizeMs = 20;
 #endif
+    }
+    tTempFrameLen = ((int) (((float)mSamplingRate) * ((float)mFrameSizeMs) / 1000.0f));
+
+    //calculate filter len (in samples)
+    int tTempFilterLen = 0;
+    if(mFilterLenMs == -1){
+#if defined (__ANDROID__)
+        mFilterLenMs = 256;
+#else
+        mFilterLenMs = 128;
+#endif
+    }
+    tTempFilterLen = ((int) (((float)mSamplingRate) * ((float)mFilterLenMs) / 1000.0f));
+
+    //calculate filter len (in bytes)
+    int tTempIntDelay = 0;
+    if(mInternalDelayLenMs == -1){
+#if defined (__ANDROID__)
+        mInternalDelayLenMs = 400;
+#else
+        mInternalDelayLenMs = 20;
+#endif
+    }
+    tTempIntDelay = ((int) (((float)mSamplingRate) * 2 * ((float)mInternalDelayLenMs) / 1000.0f)); //for S16LE format!
+
+    initPrivate(tTempFrameLen, tTempFilterLen, tTempIntDelay);
 }
 
-void HAECManager::init(int pFrameSize, int pFilterLength)
+void HAECManager::initPrivate(int pFrameSize, int pFilterLength, int pInternalDelayLenght)
 {
     if(mInitialized)
         return;
 
     mFrameSize = pFrameSize;
     mFilterLen = pFilterLength;
+    mInternalDelayLen = pInternalDelayLenght;
 
     mEarBuffer = new spx_int16_t[mFrameSize];
     mMicBuffer = new spx_int16_t[mFrameSize];
@@ -55,7 +90,6 @@ void HAECManager::init(int pFrameSize, int pFilterLength)
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f);
     f=.0;
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
-
 
     int vad = 1;
     int vadProbStart = 80;
@@ -99,15 +133,53 @@ void HAECManager::init(int pFrameSize, int pFilterLength)
     //    f=.0;
     //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
     //    //////////////////////
+
     mInitialized = true;
 
-    qDebug() << "1 AEC Props -----------------------";
-    qDebug() << "Frame Len:" << mFrameSize;
-    qDebug() << "Filter Len:" << mFilterLen;
-    qDebug() << "Sampling Rate:" << mSamplingRate;
+    qDebug() << "AEC Props -----------------------";
+    qDebug() << "Sampling Rate:" << mSamplingRate << "/ 1000 ms";
+    qDebug() << "Audio Device Buffers:" << calculateAudioBufferLength() << "/ 50 ms";
+    qDebug() << "Frame Len:" << mFrameSize << "/" << mFrameSizeMs << "ms";
+    qDebug() << "Filter Len:" << mFilterLen << "/" << mFilterLenMs << "ms";
+    qDebug() << "Internal Delay:" << mInternalDelayLen << "/" << mInternalDelayLenMs << "ms";
     qDebug() << "---------------------------------";
 
     resetAec();
+}
+
+int HAECManager::getInternalDelayLen() const
+{
+    return mInternalDelayLen;
+}
+
+void HAECManager::setInternalDelayLen(int internalDelayLen)
+{
+    mInternalDelayLen = internalDelayLen;
+}
+
+int HAECManager::calculateAudioBufferLength()
+{
+    return ((int) ((((float)mSamplingRate) * 2.0f) / 20.0f)); //50 ms buffer
+}
+
+int HAECManager::getInternalDelayLenMs() const
+{
+    return mInternalDelayLenMs;
+}
+
+void HAECManager::setInternalDelayLenMs(int internalDelayLenMs)
+{
+    mInternalDelayLenMs = internalDelayLenMs;
+}
+
+int HAECManager::getFrameSizeMs() const
+{
+    return mFrameSizeMs;
+}
+
+void HAECManager::setFrameSizeMs(int frameSizeMs)
+{
+    mFrameSizeMs = frameSizeMs;
 }
 
 void HAECManager::deInit()
@@ -133,18 +205,13 @@ void HAECManager::onCapture(const char *data)
     memcpy((char*) mMicBuffer, data, mFrameSize*2);
 
     speex_echo_capture(mEchoState, mMicBuffer, mOutBuffer);
-    qDebug() << "VAD:" << speex_preprocess_run(mPreprocess, mOutBuffer);
-//    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
+//    qDebug() << "VAD:" << speex_preprocess_run(mPreprocess, mOutBuffer);
+    //    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
 }
 
 bool HAECManager::initialized()
 {
     return mInitialized;
-}
-
-void HAECManager::setFilterLen(int filterLen)
-{
-    mFilterLen = filterLen;
 }
 
 char *HAECManager::getCleanBuffer()
@@ -168,6 +235,31 @@ void HAECManager::resetAec()
 int HAECManager::getSamplingRate() const
 {
     return mSamplingRate;
+}
+
+void HAECManager::setEarReady(bool earReady)
+{
+    mEarReady = earReady;
+}
+
+bool HAECManager::getEarReady() const
+{
+    return mEarReady;
+}
+
+int HAECManager::getFilterLenMs() const
+{
+    return mFilterLenMs;
+}
+
+void HAECManager::setFilterLenMs(int filterLenMs)
+{
+    mFilterLenMs = filterLenMs;
+}
+
+int HAECManager::getFilterLen() const
+{
+    return mFilterLen;
 }
 
 void HAECManager::setSamplingRate(int samplingRate)

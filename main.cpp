@@ -6,8 +6,8 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setOrganizationName("Havelsan");
-    QCoreApplication::setOrganizationDomain("harf.havelsan.com.tr");
+    QCoreApplication::setOrganizationName("Aydolabs");
+    QCoreApplication::setOrganizationDomain("aydolabs.com");
     QCoreApplication::setApplicationName("SpeexTest App");
 
     QApplication a(argc, argv);

@@ -25,15 +25,16 @@ public:
     void play();
     void stopPlay();
     void playRecord(QString pFile);
-    void initWithAEC();
+    void initWithAEC(int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs);
     void deInitWithAEC();
 
-    void setBitRate(int bitRate);
-    void setFrameLenMs(int frameLenMs);
+    void setSampleRate(int bitRate);
 
     void resetAudioDevices();
 
     void initForInternalDelay();
+
+    void setVolumes(float pMic, float pSpeaker);
 
 private:
     QAudioInput* mMicDevice;
@@ -43,8 +44,9 @@ private:
     HMicBuffer* mMicBuffer;
     HEarBuffer* mEarBuffer;
     HAECManager* mEchoManager;
-    int mBitRate;
-    int mFrameLenMs;
+    int mSampleRate;
+    float mMicVolume;
+    float mSpeakerVolume;
 
 private slots:
     void handleStateChangedMic(QAudio::State newState);
