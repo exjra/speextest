@@ -33,18 +33,28 @@ qint64 HMicBuffer::writeData(const char *data, qint64 len)
 {
     if(mAec == nullptr) return len;
 
-    mAec->init(len/2);
+//    mAec->init(len/2);
+    mAec->init(mAec->getSamplingRate()  * 10 / 1000);
 
-    mAec->onCapture(data);
+    QByteArray tAry(data, len);
+    mMainBuffer.append(tAry);
 
-    mOutputMicFile.write(data, mAec->getFrameSize()*2);
+    while(mMainBuffer.length() >= mAec->getFrameSize()*2)
+    {
+        mAec->onCapture(mMainBuffer.data());
 
-    char* tCleanBuffer = mAec->getCleanBuffer();
+        mOutputMicFile.write(mMainBuffer.data(), mAec->getFrameSize()*2);
 
-    if(tCleanBuffer != nullptr)
-        mOutputFile.write(tCleanBuffer, mAec->getFrameSize()*2);
+        char* tCleanBuffer = mAec->getCleanBuffer();
 
-    qDebug() << "mic:" << len << "/" << mAec->getFrameSize()*2;
+        if(tCleanBuffer != nullptr)
+            mOutputFile.write(tCleanBuffer, mAec->getFrameSize()*2);
+
+        qDebug() << "mic:" << len << "/" << mAec->getFrameSize()*2;
+
+
+        mMainBuffer.remove(0, mAec->getFrameSize()*2);
+    }
 
     return len;
 }

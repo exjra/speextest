@@ -28,6 +28,8 @@ public:
 
     void resetAec();
 
+    int getSamplingRate() const;
+
 private:
     SpeexEchoState *mEchoState;
     SpeexPreprocessState *mPreprocess;

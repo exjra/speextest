@@ -30,6 +30,7 @@ private:
     int mByPassFrameSize;
 
     QElapsedTimer mElapsed;
+    QByteArray mMainBuffer;
 };
 
 #endif // HMICBUFFER_H

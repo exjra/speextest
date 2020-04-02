@@ -49,6 +49,13 @@ qint64 HEarBuffer::readData(char *data, qint64 maxlen)
     if(mMainBuffer.length() >= maxlen)
         memcpy(data, mMainBuffer.data(), maxlen);
 
+//    if(mFirstTime)
+//    {
+//        if(mMainBuffer)
+//        mFirstTime = false;
+
+//    }
+
     int tCount = 0;
     while(true)
     {

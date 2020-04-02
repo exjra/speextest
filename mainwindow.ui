@@ -148,7 +148,8 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Reset</string>
+       <string>Internal Delay
+Test</string>
       </property>
      </widget>
     </item>

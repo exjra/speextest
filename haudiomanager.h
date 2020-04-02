@@ -32,6 +32,9 @@ public:
     void setFrameLenMs(int frameLenMs);
 
     void resetAudioDevices();
+
+    void initForInternalDelay();
+
 private:
     QAudioInput* mMicDevice;
     QAudioOutput* mEarDevice;

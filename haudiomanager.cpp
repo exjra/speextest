@@ -157,7 +157,7 @@ void HAudioManager::initWithAEC()
         }
 
         mMicDevice = new QAudioInput(format, this);
-        mMicDevice->setBufferSize(mBitRate*2/20);
+        mMicDevice->setBufferSize(mBitRate  * 200 / 1000);
         mMicDevice->setVolume(0.8);
         connect(mMicDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedMic(QAudio::State)));
 
@@ -184,7 +184,7 @@ void HAudioManager::initWithAEC()
         }
 
         mEarDevice = new QAudioOutput(format, this);
-        mEarDevice->setBufferSize(mBitRate*2/20);
+        mEarDevice->setBufferSize(mBitRate  * 200 / 1000);
         mEarDevice->setVolume(0.7);
         connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedEar(QAudio::State)));
 
@@ -200,7 +200,7 @@ void HAudioManager::initWithAEC()
     mEarBuffer->setAec(mEchoManager);
     mMicBuffer->setAec(mEchoManager);
 
-    qDebug() << "ready @3";
+    qDebug() << "ready @6";
 }
 
 void HAudioManager::deInitWithAEC()
@@ -245,7 +245,12 @@ void HAudioManager::resetAudioDevices()
 //    {
 //        mEarDevice->reset();
 //        mEarDevice->resume();
-//    }
+    //    }
+}
+
+void HAudioManager::initForInternalDelay()
+{
+
 }
 
 void HAudioManager::stopPlay()

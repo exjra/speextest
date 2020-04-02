@@ -17,8 +17,11 @@ void HAECManager::init(int pFrameSize)
 {
     if(mInitialized)
         return;
-
-    init(pFrameSize, mFilterLen);
+#if defined (__ANDROID__)
+    init(pFrameSize, 10*pFrameSize);
+#else
+    init(pFrameSize, mSamplingRate  * 128 / 1000);
+#endif
 }
 
 void HAECManager::init(int pFrameSize, int pFilterLength)
@@ -131,7 +134,7 @@ void HAECManager::onCapture(const char *data)
 
     speex_echo_capture(mEchoState, mMicBuffer, mOutBuffer);
     qDebug() << "VAD:" << speex_preprocess_run(mPreprocess, mOutBuffer);
-    //    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
+//    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
 }
 
 bool HAECManager::initialized()
@@ -160,6 +163,11 @@ int HAECManager::getFrameSize()
 void HAECManager::resetAec()
 {
     speex_echo_state_reset(mEchoState);
+}
+
+int HAECManager::getSamplingRate() const
+{
+    return mSamplingRate;
 }
 
 void HAECManager::setSamplingRate(int samplingRate)

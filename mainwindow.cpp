@@ -100,5 +100,5 @@ void MainWindow::on_pushButton_6_clicked()
 void MainWindow::on_pushButton_7_clicked()
 {
     if(mAudioManager != nullptr)
-        mAudioManager->resetAudioDevices();
+        mAudioManager->initForInternalDelay();
 }

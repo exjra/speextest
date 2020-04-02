@@ -30,6 +30,8 @@ private:
     QByteArray mMainBuffer;
 
     QElapsedTimer mElapsed;
+
+    bool mFirstTime = true;
 };
 
 #endif // HEARBUFFER_H
