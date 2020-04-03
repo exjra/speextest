@@ -31,6 +31,8 @@ private slots:
 
     void on_pushButton_6_clicked();
 
+    void onSpeechState(bool pSpeech);
+
 private:
     Ui::MainWindow *ui;
     HAudioManager* mAudioManager;

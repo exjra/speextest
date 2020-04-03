@@ -57,6 +57,7 @@ MainWindow::~MainWindow()
 void MainWindow::setAec(HAudioManager *aec)
 {
     mAudioManager = aec;
+    connect(mAudioManager, &HAudioManager::onSpeechState, this, &MainWindow::onSpeechState);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -139,4 +140,12 @@ void MainWindow::on_pushButton_6_clicked()
         return;
 
     mAudioManager->deInitWithAEC();
+}
+
+void MainWindow::onSpeechState(bool pSpeech)
+{
+    if(pSpeech)
+        ui->label_7->setStyleSheet("background-color: rgb(0, 255, 0);");
+    else
+        ui->label_7->setStyleSheet("background-color: rgb(0, 0, 0);");
 }

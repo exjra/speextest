@@ -122,6 +122,7 @@ void HAudioManager::playRecord(QString pFile)
 void HAudioManager::initWithAEC(int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs)
 {
     mEchoManager = new HAECManager();
+    connect(mEchoManager, &HAECManager::onSpeechState, this, &HAudioManager::onSpeechState);
 
     mEchoManager->setFrameSizeMs(pFrameLenMs);
     mEchoManager->setFilterLenMs(pFilterLenMs);

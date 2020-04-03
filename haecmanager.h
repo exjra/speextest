@@ -5,8 +5,12 @@
 #include <speex/speex_preprocess.h>
 #include <speex/speex_echo.h>
 
-class HAECManager
+#include <QObject>
+
+class HAECManager : public QObject
 {
+    Q_OBJECT
+
 public:
     HAECManager();
 
@@ -68,6 +72,12 @@ private:
 
     bool mInitialized;
     bool mEarReady;
+
+    int mSpeech;
+    int mSpeechPrev;
+
+signals:
+    void onSpeechState(bool pSpeech);
 };
 
 #endif // HAECMANAGER_H

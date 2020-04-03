@@ -13,6 +13,8 @@ HAECManager::HAECManager() :
   , mFilterLenMs(-1)
   , mFrameSizeMs(-1)
   , mInternalDelayLenMs(-1)
+  , mSpeech(0)
+  , mSpeechPrev(0)
 {
 
 }
@@ -205,8 +207,23 @@ void HAECManager::onCapture(const char *data)
     memcpy((char*) mMicBuffer, data, mFrameSize*2);
 
     speex_echo_capture(mEchoState, mMicBuffer, mOutBuffer);
-//    qDebug() << "VAD:" << speex_preprocess_run(mPreprocess, mOutBuffer);
+    int tRet = speex_preprocess_run(mPreprocess, mOutBuffer);
     //    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
+
+    if(mSpeech == 0 && tRet == 0) //susmaya devam
+    {
+
+    }
+    else if(mSpeech == 0 && tRet == 1) //konusmaya basladi
+        emit onSpeechState(true);
+    else if(mSpeech == 1 && tRet == 1) //konusmaya devam
+    {
+
+    }
+    else if(mSpeech == 1 && tRet == 0) //susmaya basladi
+        emit onSpeechState(false);
+
+    mSpeech = tRet;
 }
 
 bool HAECManager::initialized()

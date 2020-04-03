@@ -15,6 +15,7 @@
 class HAudioManager : public QObject
 {
     Q_OBJECT
+
 public:
     HAudioManager();
 
@@ -51,6 +52,10 @@ private:
 private slots:
     void handleStateChangedMic(QAudio::State newState);
     void handleStateChangedEar(QAudio::State newState);
+
+signals:
+    void onSpeechState(bool pSpeech);
+
 };
 
 #endif // HAUDIOMANAGER_H

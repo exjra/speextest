@@ -22,8 +22,25 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QSpinBox" name="spinBox">
+    <item row="6" column="1">
+     <widget class="QSpinBox" name="spinBox_5">
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="value">
+       <number>100</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Filter Length (ms):</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QSpinBox" name="spinBox_3">
       <property name="minimum">
        <number>-1</number>
       </property>
@@ -32,6 +49,108 @@
       </property>
       <property name="value">
        <number>-1</number>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Internal Delay (ms):</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QPushButton" name="pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>init</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>deinit</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Mic Volume %:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QPushButton" name="pushButton_5">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>init with aec</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QSpinBox" name="spinBox_2">
+      <property name="minimum">
+       <number>-1</number>
+      </property>
+      <property name="maximum">
+       <number>1000</number>
+      </property>
+      <property name="value">
+       <number>-1</number>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="1">
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>play record</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>play</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QSpinBox" name="spinBox_4">
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="value">
+       <number>100</number>
       </property>
      </widget>
     </item>
@@ -57,133 +176,7 @@
       </item>
      </widget>
     </item>
-    <item row="4" column="1">
-     <widget class="QSpinBox" name="spinBox_2">
-      <property name="minimum">
-       <number>-1</number>
-      </property>
-      <property name="maximum">
-       <number>1000</number>
-      </property>
-      <property name="value">
-       <number>-1</number>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QSpinBox" name="spinBox_4">
-      <property name="maximum">
-       <number>100</number>
-      </property>
-      <property name="value">
-       <number>100</number>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="0">
-     <widget class="QPushButton" name="pushButton_3">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>play</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="0">
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>deinit</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_4">
-      <property name="text">
-       <string>Internal Delay (ms):</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Filter Length (ms):</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="1">
-     <widget class="QPushButton" name="pushButton_5">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>init with aec</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QSpinBox" name="spinBox_5">
-      <property name="maximum">
-       <number>100</number>
-      </property>
-      <property name="value">
-       <number>100</number>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QPushButton" name="pushButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>init</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_5">
-      <property name="text">
-       <string>Frame Length (ms):</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QSpinBox" name="spinBox_3">
-      <property name="minimum">
-       <number>-1</number>
-      </property>
-      <property name="maximum">
-       <number>1000</number>
-      </property>
-      <property name="value">
-       <number>-1</number>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QLabel" name="label_6">
-      <property name="text">
-       <string>Speaker Vol %:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1">
+    <item row="9" column="1">
      <widget class="QPushButton" name="pushButton_6">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -196,23 +189,43 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_3">
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>Mic Volume %:</string>
+       <string>Speaker Vol %:</string>
       </property>
      </widget>
     </item>
-    <item row="9" column="1">
-     <widget class="QPushButton" name="pushButton_4">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Frame Length (ms):</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSpinBox" name="spinBox">
+      <property name="minimum">
+       <number>-1</number>
+      </property>
+      <property name="maximum">
+       <number>1000</number>
+      </property>
+      <property name="value">
+       <number>-1</number>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="2">
+     <widget class="QLabel" name="label_7">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 0, 0);</string>
       </property>
       <property name="text">
-       <string>play record</string>
+       <string>SPEECH STATE</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
