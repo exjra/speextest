@@ -55,6 +55,7 @@ private slots:
 
 signals:
     void onSpeechState(bool pSpeech);
+    void onTimeDiff(int pDiff);
 
 };
 

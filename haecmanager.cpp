@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QDateTime>
 #include <QDebug>
 
 HAECManager::HAECManager() :
@@ -15,6 +16,8 @@ HAECManager::HAECManager() :
   , mInternalDelayLenMs(-1)
   , mSpeech(0)
   , mSpeechPrev(0)
+  , mFirstEar(true)
+  , mFirstMic(true)
 {
 
 }
@@ -196,6 +199,16 @@ void HAECManager::onPlayback(char *data)
 
     memcpy((char*) mEarBuffer, data, mFrameSize*2);
 
+    if(mFirstEar)
+    {
+        mFirstEar = false;
+        mFirstEarTime = QDateTime::currentMSecsSinceEpoch();
+        qDebug() << "Ear First Time:" << mFirstEarTime;
+
+        if(!mFirstEar && !mFirstMic)
+            emit onTimeDiff(mFirstEarTime - mFirstMicTime);
+    }
+
     speex_echo_playback(mEchoState, mEarBuffer);
 }
 
@@ -206,9 +219,19 @@ void HAECManager::onCapture(const char *data)
 
     memcpy((char*) mMicBuffer, data, mFrameSize*2);
 
+    if(mFirstMic)
+    {
+        mFirstMic = false;
+        mFirstMicTime = QDateTime::currentMSecsSinceEpoch();
+        qDebug() << "Mic First Time:" << mFirstMicTime;
+
+        if(!mFirstEar && !mFirstMic)
+            emit onTimeDiff(mFirstEarTime - mFirstMicTime);
+    }
+
     speex_echo_capture(mEchoState, mMicBuffer, mOutBuffer);
+//    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
     int tRet = speex_preprocess_run(mPreprocess, mOutBuffer);
-    //    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
 
     if(mSpeech == 0 && tRet == 0) //susmaya devam
     {

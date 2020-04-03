@@ -76,8 +76,15 @@ private:
     int mSpeech;
     int mSpeechPrev;
 
+    bool mFirstEar;
+    bool mFirstMic;
+
+    qint64 mFirstMicTime;
+    qint64 mFirstEarTime;
+
 signals:
     void onSpeechState(bool pSpeech);
+    void onTimeDiff(int pDiff);
 };
 
 #endif // HAECMANAGER_H

@@ -123,6 +123,7 @@ void HAudioManager::initWithAEC(int pFrameLenMs, int pFilterLenMs, int pInternal
 {
     mEchoManager = new HAECManager();
     connect(mEchoManager, &HAECManager::onSpeechState, this, &HAudioManager::onSpeechState);
+    connect(mEchoManager, &HAECManager::onTimeDiff, this, &HAudioManager::onTimeDiff);
 
     mEchoManager->setFrameSizeMs(pFrameLenMs);
     mEchoManager->setFilterLenMs(pFilterLenMs);

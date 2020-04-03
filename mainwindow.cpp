@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
         tVal = 80;
     ui->spinBox_5->setValue(tVal);
 
-    setWindowTitle("ready @11");
+    setWindowTitle("ready @13");
     qDebug() << windowTitle();
 }
 
@@ -58,6 +58,7 @@ void MainWindow::setAec(HAudioManager *aec)
 {
     mAudioManager = aec;
     connect(mAudioManager, &HAudioManager::onSpeechState, this, &MainWindow::onSpeechState);
+    connect(mAudioManager, &HAudioManager::onTimeDiff, this, &MainWindow::onTimeDiff);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -148,4 +149,9 @@ void MainWindow::onSpeechState(bool pSpeech)
         ui->label_7->setStyleSheet("background-color: rgb(0, 255, 0);");
     else
         ui->label_7->setStyleSheet("background-color: rgb(0, 0, 0);");
+}
+
+void MainWindow::onTimeDiff(int pdiff)
+{
+    ui->label_7->setText(QString::number(pdiff));
 }

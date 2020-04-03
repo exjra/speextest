@@ -32,6 +32,7 @@ private slots:
     void on_pushButton_6_clicked();
 
     void onSpeechState(bool pSpeech);
+    void onTimeDiff(int pdiff);
 
 private:
     Ui::MainWindow *ui;
