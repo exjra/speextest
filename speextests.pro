@@ -27,6 +27,7 @@ CONFIG += c++11
 SOURCES += \
         haecmanager.cpp \
         haudiomanager.cpp \
+        haudioserver.cpp \
         hdevice.cpp \
         hearbuffer.cpp \
         hmicbuffer.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 HEADERS += \
         haecmanager.h \
         haudiomanager.h \
+        haudioserver.h \
         hdevice.h \
         hearbuffer.h \
         hmicbuffer.h \
@@ -74,3 +76,5 @@ DISTFILES += \
 
 ANDROID_PACKAGE_SOURCE_DIR = \
     $$PWD/android
+
+include(harfsdk.pri))

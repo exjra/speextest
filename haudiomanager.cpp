@@ -194,9 +194,11 @@ void HAudioManager::initWithAEC(int pFrameLenMs, int pFilterLenMs, int pInternal
 
         QThread* tThread = new QThread();
         mEarDevice = new QAudioOutput(format, tThread);
+        mEarDevice->setNotifyInterval(100);
         mEarDevice->setBufferSize(mEchoManager->calculateAudioBufferLength());
         mEarDevice->setVolume(mSpeakerVolume);
         connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedEar(QAudio::State)));
+        connect(mEarDevice, &QAudioOutput::notify, this, &HAudioManager::notifyEar);
 
         tThread->start();
 
@@ -262,6 +264,11 @@ void HAudioManager::setVolumes(float pMic, float pSpeaker)
 {
     mMicVolume = pMic;
     mSpeakerVolume = pSpeaker;
+}
+
+void HAudioManager::notifyEar()
+{
+    qDebug() << "notify" << mEarDevice->notifyInterval();
 }
 
 void HAudioManager::stopPlay()

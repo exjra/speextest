@@ -50,6 +50,7 @@ private:
     float mSpeakerVolume;
 
 private slots:
+    void notifyEar();
     void handleStateChangedMic(QAudio::State newState);
     void handleStateChangedEar(QAudio::State newState);
 

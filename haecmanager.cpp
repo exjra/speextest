@@ -167,6 +167,11 @@ int HAECManager::calculateAudioBufferLength()
     return ((int) ((((float)mSamplingRate) * 2.0f) / 20.0f)); //50 ms buffer
 }
 
+void HAECManager::doCapture()
+{
+
+}
+
 int HAECManager::getInternalDelayLenMs() const
 {
     return mInternalDelayLenMs;
