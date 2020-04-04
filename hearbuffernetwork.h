@@ -4,6 +4,8 @@
 #include <QDataStream>
 #include <QBuffer>
 #include <QFile>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QElapsedTimer>
 
 #include "haecmanager.h"
@@ -32,6 +34,8 @@ private:
     QElapsedTimer mElapsed;
 
     bool mFirstTime;
+
+    QMutex mMutex;
 };
 
 #endif // HEARBUFFER_H
