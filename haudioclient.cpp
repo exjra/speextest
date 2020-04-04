@@ -36,7 +36,7 @@ void HAudioClient::sendData(char *pdata, int pSize)
         return;
 
     mTargetConnection->sendData(0, pdata, pSize);
-    qDebug() << "data sent";
+//    qDebug() << "data sent";
 }
 
 void HAudioClient::initForServer()
