@@ -18,14 +18,20 @@ void HAudioClient::init(bool pIsServer, std::string pMyName, std::string pTarget
     if(pIsServer)
     {
         if(mMyName != "")
+        {
+            initEncoderDecoder();
             initForServer();
+        }
         else
             qDebug() << "Client name(" << QString::fromStdString(mMyName) << " must be set!";
     }
     else
     {
         if(mMyName != "" && mTargetName != "")
+        {
+            initEncoderDecoder();
             initForClient();
+        }
         else
             qDebug() << "Client name(" << QString::fromStdString(mMyName) << ") or Target Name (" << QString::fromStdString(mTargetName) << ") must be set!";
     }
@@ -36,8 +42,11 @@ void HAudioClient::sendData(char *pdata, int pSize)
     if(mTargetConnection == nullptr)
         return;
 
-    mTargetConnection->sendData(0, pdata, pSize);
-//    qDebug() << "data sent";
+    if (mAudioSendStream != nullptr)
+    {
+        if(StreamState::STATE_PLAYING == mAudioSendStream->getStreamState() || StreamState::STATE_PAUSED == mAudioSendStream->getStreamState())
+            mAudioSendStream->feedStream(pdata, pSize);
+    }
 }
 
 void HAudioClient::initForServer()
@@ -111,22 +120,66 @@ void HAudioClient::initForClient()
     qDebug() << "Waiting for connecting to server.";
 }
 
-void HAudioClient::onDataReceived(short channelID , char* data, int size)
+void HAudioClient::initEncoderDecoder()
+{
+    mAudioSendStream = HStreamFactory::createAudioSendStream();
+    mAudioSendStream->setInput(HInput::INPUT_FROM_BUFFER);
+    mAudioSendStream->setOutput(HOutput::OUTPUT_TO_BUFFER);
+    mAudioSendStream->setPayloadEnabled(true);
+    mAudioSendStream->setStreamDataFunction(std::bind(&HAudioClient::encodedBufferReady, this, _1, _2));
+    mAudioSendStream->setAudioPropFunction(std::bind(&HAudioClient::encoderPropReceived, this, _1, _2, _3, _4));
+    mAudioSendStream->initialize(mAudioCodec);
+    mAudioSendStream->play();
+
+    mAudioReceiveStream = HStreamFactory::createAudioReceiveStream();
+    mAudioReceiveStream->setInput(HInput::INPUT_FROM_BUFFER);
+    mAudioReceiveStream->setOutput(HOutput::OUTPUT_TO_BUFFER);
+    mAudioReceiveStream->setPayloadEnabled(true);
+    mAudioReceiveStream->setRawDataFunction(std::bind(&HAudioClient::decodedBufferReady, this, _1, _2));
+    mAudioReceiveStream->setAudioPropFunction(std::bind(&HAudioClient::decoderPropReceived, this, _1, _2, _3, _4));
+    mAudioReceiveStream->initialize(mAudioCodec);
+    mAudioReceiveStream->play();
+}
+
+void HAudioClient::encodedBufferReady(char* data, int size)
+{
+    if(mTargetConnection != nullptr)
+        mTargetConnection->sendData(0, data, size);
+}
+
+void HAudioClient::encoderPropReceived(int rate, std::string format, int channels, std::string layout)
+{
+    qDebug() << "Encoder Audio Props are, Rate: " << rate << " , Format: " << QString::fromStdString(format) << " ,Channels: " << channels << " ,Layout: " << QString::fromStdString(layout);
+}
+
+void HAudioClient::decodedBufferReady(char *data, int size)
 {
     if(mEarBuffer == nullptr)
         return;
 
     mEarBuffer->write(data, size);
-//    dataReceived(data, size);
-//    qDebug() << "Data Received : " << std::string(data, size).c_str();
+}
+
+void HAudioClient::decoderPropReceived(int rate, std::string format, int channels, std::string layout)
+{
+    qDebug() << "Decoder Audio Props are, Rate: " << rate << " , Format: " << QString::fromStdString(format) << " ,Channels: " << channels << " ,Layout: " << QString::fromStdString(layout);
+}
+
+void HAudioClient::onDataReceived(short channelID , char* data, int size)
+{
+    if (mAudioReceiveStream != nullptr)
+    {
+        if(StreamState::STATE_PLAYING == mAudioReceiveStream->getStreamState() || StreamState::STATE_PAUSED == mAudioReceiveStream->getStreamState())
+            mAudioReceiveStream->feedStream(data, size);
+    }
 }
 
 void HAudioClient::onConnected(HIConnectionHelper* connectionHelper, HClientInfo* fromClient)
 {
     mTargetConnection = connectionHelper;
     qDebug() << "Connected to " << fromClient->name.c_str() << ".";
-//    std::string msg = "Hello to " + fromClient->name + " from " + mMyName;
-//    connectionHelper->sendData(0, msg.c_str(), msg.size());
+    //    std::string msg = "Hello to " + fromClient->name + " from " + mMyName;
+    //    connectionHelper->sendData(0, msg.c_str(), msg.size());
 }
 
 void HAudioClient::onDisconnected()

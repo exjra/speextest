@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
+    <width>311</width>
     <height>596</height>
    </rect>
   </property>
@@ -197,7 +197,8 @@ Recording</string>
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Start AEC Test</string>
+          <string>Start AEC
+Test</string>
          </property>
         </widget>
        </item>
@@ -210,7 +211,8 @@ Recording</string>
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Stop AEC Test</string>
+          <string>Stop AEC
+Test</string>
          </property>
         </widget>
        </item>
@@ -359,7 +361,7 @@ Client</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>302</width>
+     <width>311</width>
      <height>21</height>
     </rect>
    </property>
