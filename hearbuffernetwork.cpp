@@ -35,7 +35,6 @@ qint64 HEarBufferNetwork::readData(char *data, qint64 maxlen)
         if(mAec->getResetEnabled())
             mAec->resetAec();
 
-        qDebug() << "not enough data";
         memset(data, 0, maxlen);
         return maxlen;
 //        return 0;
