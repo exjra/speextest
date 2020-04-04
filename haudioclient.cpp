@@ -5,6 +5,7 @@
 
 HAudioClient::HAudioClient() :
     mTargetConnection(nullptr)
+  , mEarBuffer(nullptr)
 {
 
 }
