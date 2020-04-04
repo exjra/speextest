@@ -42,7 +42,6 @@ qint64 HMicBufferNetwork::writeData(const char *data, qint64 len)
 
         if(tCleanBuffer != nullptr)
         {
-
 #if defined(HAS_HARFSDK)
 #if !defined (__ANDROID__)
             if(mClient)

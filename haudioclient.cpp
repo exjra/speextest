@@ -36,6 +36,7 @@ void HAudioClient::sendData(char *pdata, int pSize)
         return;
 
     mTargetConnection->sendData(0, pdata, pSize);
+    qDebug() << "data sent";
 }
 
 void HAudioClient::initForServer()
@@ -121,6 +122,7 @@ void HAudioClient::onDataReceived(short channelID , char* data, int size)
 
 void HAudioClient::onConnected(HIConnectionHelper* connectionHelper, HClientInfo* fromClient)
 {
+    mTargetConnection = connectionHelper;
     qDebug() << "Connected to " << fromClient->name.c_str() << ".";
 //    std::string msg = "Hello to " + fromClient->name + " from " + mMyName;
 //    connectionHelper->sendData(0, msg.c_str(), msg.size());
