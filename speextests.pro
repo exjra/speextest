@@ -98,3 +98,5 @@ contains(DEFINES, HAS_HARFSDK) {
         include(harfsdk.pri)
     }
 }
+
+#%HARFSDK%/win32/msvc2017_64/3rdparty/opencv/bin;%HARFSDK%/win32/msvc2017_64/3rdparty/openssl/bin;%HARFSDK%/win32/msvc2017_64/3rdparty/osg/bin;%HARFSDK%/win32/msvc2017_64/3rdparty/zlib/bin;%HARFSDK%/win32/msvc2017_64/bin;%HARFSDK%\win32\msvc2017_64\3rdparty\cpprestsdk\bin;%HARFSDK%\win32\msvc2017_64\3rdparty\boost\bin
