@@ -1,5 +1,5 @@
-#ifndef HAUDIOSERVER_H
-#define HAUDIOSERVER_H
+#ifndef HAUDIOCLIENT_H
+#define HAUDIOCLIENT_H
 
 #include <harfconnection/hconnectionfactory.h>
 #include <harfconnection/hiconnection.h>
@@ -9,19 +9,23 @@
 using namespace std::placeholders;
 using namespace harf::connection;
 
-class HAudioServer
+class HAudioClient
 {
 public:
-    HAudioServer();
+    HAudioClient();
 
-    void init();
+    void init(bool pIsServer, std::string pMyName, std::string pTargetName);
 
 private:
-    std::string myself = "Peer1";
+    std::string mMyName;
+    std::string mTargetName;
 
+    void initForServer();
+    void initForClient();
     void onDataReceived(short channelID , char* data, int size);
     void onConnected(HIConnectionHelper* connectionHelper, HClientInfo* fromClient);
     void onDisconnected();
+    void onConnectionTimeout();
 };
 
 #endif // HAUDIOSERVER_H

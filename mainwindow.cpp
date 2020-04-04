@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
         tVal = 80;
     ui->spinBox_5->setValue(tVal);
 
-    setWindowTitle("ready @13");
+    setWindowTitle("ready @15");
     qDebug() << windowTitle();
 }
 
@@ -69,6 +69,12 @@ void MainWindow::on_pushButton_clicked()
         return;
 
     mAudioManager->init();
+
+    ui->pushButton->setEnabled(false);
+    ui->pushButton_2->setEnabled(true);
+    ui->pushButton_5->setEnabled(false);
+    ui->pushButton_6->setEnabled(false);
+    ui->groupBox_2->setEnabled(false);
 }
 
 void MainWindow::on_pushButton_2_clicked()
@@ -77,6 +83,12 @@ void MainWindow::on_pushButton_2_clicked()
         return;
 
     mAudioManager->deInit();
+
+    ui->pushButton->setEnabled(true);
+    ui->pushButton_2->setEnabled(true);
+    ui->pushButton_5->setEnabled(true);
+    ui->pushButton_6->setEnabled(true);
+    ui->groupBox_2->setEnabled(true);
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -108,6 +120,10 @@ void MainWindow::on_pushButton_4_clicked()
     {
         mAudioManager->setSampleRate(ui->comboBox->currentText().toInt());
         mAudioManager->playRecord(tPath);
+
+        ui->groupBox->setEnabled(false);
+        ui->pushButton_4->setEnabled(false);
+        ui->pushButton_7->setEnabled(true);
     }
 }
 
@@ -133,6 +149,12 @@ void MainWindow::on_pushButton_5_clicked()
     int tInternalDelay = ui->spinBox_2->value();
 
     mAudioManager->initWithAEC(tFrameLen, tFilterLen, tInternalDelay);
+
+    ui->pushButton->setEnabled(false);
+    ui->pushButton_2->setEnabled(false);
+    ui->pushButton_5->setEnabled(false);
+    ui->pushButton_6->setEnabled(true);
+    ui->groupBox_2->setEnabled(false);
 }
 
 void MainWindow::on_pushButton_6_clicked()
@@ -141,17 +163,43 @@ void MainWindow::on_pushButton_6_clicked()
         return;
 
     mAudioManager->deInitWithAEC();
+
+    ui->pushButton->setEnabled(true);
+    ui->pushButton_2->setEnabled(true);
+    ui->pushButton_5->setEnabled(true);
+    ui->pushButton_6->setEnabled(true);
+    ui->groupBox_2->setEnabled(true);
+
+    setStyleSheet("");
 }
 
 void MainWindow::onSpeechState(bool pSpeech)
 {
+    qDebug() << "hhhhhhhhhhhhhhhhhhhh" << styleSheet();
     if(pSpeech)
-        ui->label_7->setStyleSheet("background-color: rgb(0, 255, 0);");
+        setStyleSheet("background-color: rgb(0, 255, 0);");
     else
-        ui->label_7->setStyleSheet("background-color: rgb(0, 0, 0);");
+        setStyleSheet("");
 }
 
 void MainWindow::onTimeDiff(int pdiff)
 {
-    ui->label_7->setText(QString::number(pdiff));
+    qDebug() << "Time difference between first speaker buffer and first mic buffer : " << QString::number(pdiff);
+}
+
+void MainWindow::on_pushButton_7_clicked()
+{
+    if(mAudioManager == nullptr)
+        return;
+
+    mAudioManager->stopPlay();
+
+    ui->groupBox->setEnabled(true);
+    ui->pushButton_4->setEnabled(true);
+    ui->pushButton_7->setEnabled(true);
+}
+
+void MainWindow::on_pushButton_8_clicked()
+{
+
 }

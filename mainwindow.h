@@ -34,6 +34,10 @@ private slots:
     void onSpeechState(bool pSpeech);
     void onTimeDiff(int pdiff);
 
+    void on_pushButton_7_clicked();
+
+    void on_pushButton_8_clicked();
+
 private:
     Ui::MainWindow *ui;
     HAudioManager* mAudioManager;

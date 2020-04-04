@@ -103,6 +103,9 @@ void HAECManager::initPrivate(int pFrameSize, int pFilterLength, int pInternalDe
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_START , &vadProbStart); //Set probability required for the VAD to go from silence to voice
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &vadProbContinue); //Set probability required for the VAD to stay in the voice state (integer percent)
 
+
+
+
     //    int i=1;
     //    speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DENOISE, &i);
 
@@ -165,11 +168,6 @@ void HAECManager::setInternalDelayLen(int internalDelayLen)
 int HAECManager::calculateAudioBufferLength()
 {
     return ((int) ((((float)mSamplingRate) * 2.0f) / 20.0f)); //50 ms buffer
-}
-
-void HAECManager::doCapture()
-{
-
 }
 
 int HAECManager::getInternalDelayLenMs() const
