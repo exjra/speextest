@@ -39,6 +39,17 @@ qint64 HEarBufferNetwork::readData(char *data, qint64 maxlen)
         return maxlen;
 //        return 0;
     }
+    else if(mDataBuffer.length() > maxlen*10)
+    {
+        mDataBuffer.clear();
+
+        mAec->resetAec();
+
+        qDebug() << "cleared lots of data buffer!";
+
+        memset(data, 0, maxlen);
+        return maxlen;
+    }
 
     qDebug() << "hea" << mDataBuffer.length();
 
