@@ -4,6 +4,12 @@
 #include <QMainWindow>
 #include "haudiomanager.h"
 
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
+#include "haudioclient.h"
+#endif
+#endif
+
 namespace Ui {
 class MainWindow;
 }
@@ -17,6 +23,12 @@ public:
     ~MainWindow();
 
     void setAec(HAudioManager *aec);
+
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
+    void setClient(HAudioClient *client);
+#endif
+#endif
 
 private slots:
     void on_pushButton_clicked();
@@ -41,6 +53,12 @@ private slots:
 private:
     Ui::MainWindow *ui;
     HAudioManager* mAudioManager;
+
+#if defined(HAS_HARFSDK)
+    #if !defined (__ANDROID__)
+    HAudioClient* mClient;
+#endif
+#endif
 };
 
 #endif // MAINWINDOW_H

@@ -10,7 +10,17 @@
 #include "hmicbuffer.h"
 #include "hearbuffer.h"
 
+#include "hmicbuffernetwork.h"
+#include "hearbuffernetwork.h"
+
 #include "haecmanager.h"
+
+
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
+#include "haudioclient.h"
+#endif
+#endif
 
 class HAudioManager : public QObject
 {
@@ -27,6 +37,13 @@ public:
     void stopPlay();
     void playRecord(QString pFile);
     void initWithAEC(int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs);
+
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
+    void initForNetwork(HAudioClient* pClient, int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs);
+#endif
+#endif
+
     void deInitWithAEC();
 
     void setSampleRate(int bitRate);
@@ -35,7 +52,7 @@ public:
 
     void initForInternalDelay();
 
-    void setVolumes(float pMic, float pSpeaker);
+    void setVolumes(float pMic, float pSpeaker);    
 
 private:
     QAudioInput* mMicDevice;
@@ -44,6 +61,10 @@ private:
     QFile sourcefile;
     HMicBuffer* mMicBuffer;
     HEarBuffer* mEarBuffer;
+
+    HMicBufferNetwork* mMicBufferNetwork;
+    HEarBufferNetwork* mEarBufferNetwork;
+
     HAECManager* mEchoManager;
     int mSampleRate;
     float mMicVolume;

@@ -10,6 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
   , ui(new Ui::MainWindow)
   , mAudioManager(nullptr)
+  #if defined(HAS_HARFSDK)
+  #if !defined (__ANDROID__)
+  , mClient(nullptr)
+  #endif
+  #endif
 {
     ui->setupUi(this);
 
@@ -45,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
         tVal = 80;
     ui->spinBox_5->setValue(tVal);
 
-    setWindowTitle("ready @15");
+    setWindowTitle("ready @16");
     qDebug() << windowTitle();
 }
 
@@ -75,6 +80,7 @@ void MainWindow::on_pushButton_clicked()
     ui->pushButton_5->setEnabled(false);
     ui->pushButton_6->setEnabled(false);
     ui->groupBox_2->setEnabled(false);
+    ui->groupBox_3->setEnabled(false);
 }
 
 void MainWindow::on_pushButton_2_clicked()
@@ -89,11 +95,7 @@ void MainWindow::on_pushButton_2_clicked()
     ui->pushButton_5->setEnabled(true);
     ui->pushButton_6->setEnabled(true);
     ui->groupBox_2->setEnabled(true);
-}
-
-void MainWindow::on_pushButton_3_clicked()
-{
-    mAudioManager->play();
+    ui->groupBox_3->setEnabled(true);
 }
 
 void MainWindow::on_pushButton_4_clicked()
@@ -155,6 +157,7 @@ void MainWindow::on_pushButton_5_clicked()
     ui->pushButton_5->setEnabled(false);
     ui->pushButton_6->setEnabled(true);
     ui->groupBox_2->setEnabled(false);
+    ui->groupBox_3->setEnabled(false);
 }
 
 void MainWindow::on_pushButton_6_clicked()
@@ -169,6 +172,7 @@ void MainWindow::on_pushButton_6_clicked()
     ui->pushButton_5->setEnabled(true);
     ui->pushButton_6->setEnabled(true);
     ui->groupBox_2->setEnabled(true);
+    ui->groupBox_3->setEnabled(true);
 
     setStyleSheet("");
 }
@@ -198,8 +202,104 @@ void MainWindow::on_pushButton_7_clicked()
     ui->pushButton_4->setEnabled(true);
     ui->pushButton_7->setEnabled(true);
 }
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
+void MainWindow::setClient(HAudioClient *client)
+{
+    mClient = client;
+}
+#endif
+#endif
+
+void MainWindow::on_pushButton_3_clicked()
+{
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
+
+    if(mClient == nullptr)
+        return;
+
+    if(ui->lineEdit->text() == "")
+    {
+        qDebug() << "You must set a name for network server initialization";
+        return;
+    }
+
+    mClient->init(true, ui->lineEdit->text().toStdString(), "");
+
+    if(mAudioManager == nullptr)
+        return;
+
+    QSettings tSettings;
+
+    tSettings.setValue("comboBox", ui->comboBox->currentIndex());
+    tSettings.setValue("spinBox_4", ui->spinBox_4->value());
+    tSettings.setValue("spinBox_5", ui->spinBox_5->value());
+    tSettings.setValue("spinBox_3", ui->spinBox_3->value());
+    tSettings.setValue("spinBox", ui->spinBox->value());
+    tSettings.setValue("spinBox_2", ui->spinBox_2->value());
+
+    mAudioManager->setSampleRate(ui->comboBox->currentText().toInt());
+    mAudioManager->setVolumes(ui->spinBox_4->value() * 0.01f, ui->spinBox_5->value() * 0.01f);
+
+    int tFrameLen = ui->spinBox_3->value();
+    int tFilterLen = ui->spinBox->value();
+    int tInternalDelay = ui->spinBox_2->value();
+
+    mAudioManager->initForNetwork(mClient, tFrameLen, tFilterLen, tInternalDelay);
+
+    ui->pushButton->setEnabled(false);
+    ui->pushButton_2->setEnabled(false);
+    ui->pushButton_5->setEnabled(false);
+    ui->pushButton_6->setEnabled(true);
+    ui->groupBox_2->setEnabled(false);
+    ui->groupBox_3->setEnabled(false);
+
+#endif
+#endif
+}
 
 void MainWindow::on_pushButton_8_clicked()
 {
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
 
+    if(mClient == nullptr)
+        return;
+
+    if(ui->lineEdit->text() == "" || ui->lineEdit_2->text() == "")
+        qDebug() << "You must set your name and target name for network client initialization";
+    else
+        mClient->init(false, ui->lineEdit->text().toStdString(), ui->lineEdit_2->text().toStdString());
+
+    if(mAudioManager == nullptr)
+        return;
+
+    QSettings tSettings;
+
+    tSettings.setValue("comboBox", ui->comboBox->currentIndex());
+    tSettings.setValue("spinBox_4", ui->spinBox_4->value());
+    tSettings.setValue("spinBox_5", ui->spinBox_5->value());
+    tSettings.setValue("spinBox_3", ui->spinBox_3->value());
+    tSettings.setValue("spinBox", ui->spinBox->value());
+    tSettings.setValue("spinBox_2", ui->spinBox_2->value());
+
+    mAudioManager->setSampleRate(ui->comboBox->currentText().toInt());
+    mAudioManager->setVolumes(ui->spinBox_4->value() * 0.01f, ui->spinBox_5->value() * 0.01f);
+
+    int tFrameLen = ui->spinBox_3->value();
+    int tFilterLen = ui->spinBox->value();
+    int tInternalDelay = ui->spinBox_2->value();
+
+    mAudioManager->initForNetwork(mClient, tFrameLen, tFilterLen, tInternalDelay);
+
+    ui->pushButton->setEnabled(false);
+    ui->pushButton_2->setEnabled(false);
+    ui->pushButton_5->setEnabled(false);
+    ui->pushButton_6->setEnabled(true);
+    ui->groupBox_2->setEnabled(false);
+    ui->groupBox_3->setEnabled(false);
+
+#endif
+#endif
 }

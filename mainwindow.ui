@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>208</width>
+    <width>302</width>
     <height>596</height>
    </rect>
   </property>
@@ -272,7 +272,7 @@ Recording</string>
     <item row="11" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBox_3">
       <property name="title">
-       <string>VOIP Processing</string>
+       <string>VoIp Operations</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="1">
@@ -344,7 +344,8 @@ Server</string>
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Start\nClient</string>
+          <string>Start
+Client</string>
          </property>
         </widget>
        </item>
@@ -358,7 +359,7 @@ Server</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>208</width>
+     <width>302</width>
      <height>21</height>
     </rect>
    </property>

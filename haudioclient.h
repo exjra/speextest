@@ -6,19 +6,30 @@
 #include <harfconnection/hiconnectionhelper.h>
 #include <harfconnection/hserveroptions.h>
 
+#include <QBuffer>
+#include <QObject>
+
 using namespace std::placeholders;
 using namespace harf::connection;
 
-class HAudioClient
+class HAudioClient : public QObject
 {
+    Q_OBJECT
+
 public:
     HAudioClient();
 
     void init(bool pIsServer, std::string pMyName, std::string pTargetName);
 
+    void sendData(char* pdata, int pSize);
+
+    void setEarBuffer(QBuffer *earBuffer);
+
 private:
     std::string mMyName;
     std::string mTargetName;
+
+    HIConnectionHelper* mTargetConnection;
 
     void initForServer();
     void initForClient();
@@ -26,6 +37,11 @@ private:
     void onConnected(HIConnectionHelper* connectionHelper, HClientInfo* fromClient);
     void onDisconnected();
     void onConnectionTimeout();
+
+    QBuffer* mEarBuffer;
+
+signals:
+    void dataReceived(char* pData, int pSize);
 };
 
 #endif // HAUDIOSERVER_H

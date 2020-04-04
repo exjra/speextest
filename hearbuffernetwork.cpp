@@ -1,37 +1,15 @@
-#include "hearbuffer.h"
+#include "hearbuffernetwork.h"
 
 #include <QDebug>
 
-HEarBuffer::HEarBuffer() :
+HEarBufferNetwork::HEarBufferNetwork() :
     mAec(nullptr)
   , mFirstTime(true)
 {
 
 }
 
-//qint64 HEarBuffer::readData(char *data, qint64 maxlen)
-//{
-//    if(mAec == nullptr)
-//    {
-//        memset(data, 0, maxlen);
-//        return maxlen;
-//    }
-//    else if(!mAec->initialized())
-//    {
-//        memset(data, 0, maxlen);
-//        return maxlen;
-//    }
-
-//    mSourceFile.read(data, mAec->getFrameSize()*2);
-//    mAec->onPlayback(data);
-
-//    qDebug() << "ear:" << mAec->getFrameSize()*2 << " / " << maxlen;
-
-//    return maxlen;
-//}
-
-
-qint64 HEarBuffer::readData(char *data, qint64 maxlen)
+qint64 HEarBufferNetwork::readData(char *data, qint64 maxlen)
 {
     if(mAec == nullptr)
     {
@@ -50,7 +28,7 @@ qint64 HEarBuffer::readData(char *data, qint64 maxlen)
     if(!mAec->getEarReady())
         mAec->setEarReady(true);
 
-    if(mSourceFile.atEnd())
+    if(mDataBuffer.length() < maxlen)
     {
         mAec->resetAec();
 
@@ -58,7 +36,9 @@ qint64 HEarBuffer::readData(char *data, qint64 maxlen)
         return maxlen;
     }
 
-    QByteArray tReadedData = mSourceFile.read(maxlen);
+    QByteArray tReadedData = mDataBuffer.left(maxlen);
+    mDataBuffer.remove(0, maxlen);
+
     memcpy(data, tReadedData.data(), maxlen);
     mMainBuffer.append(tReadedData);
 
@@ -122,21 +102,13 @@ qint64 HEarBuffer::readData(char *data, qint64 maxlen)
 }
 
 
-qint64 HEarBuffer::writeData(const char *data, qint64 len)
+qint64 HEarBufferNetwork::writeData(const char *data, qint64 len)
 {
-    qDebug() << "write len:" << len;
-    return QBuffer::writeData(data, len);
+    mDataBuffer.append(data, len);
+    return len;
 }
 
-void HEarBuffer::setRawFileName(const QString &rawFileName)
-{
-    mRawFile = rawFileName;
-
-    mSourceFile.setFileName(mRawFile);
-    mSourceFile.open(QIODevice::ReadOnly);
-}
-
-void HEarBuffer::setAec(HAECManager *aec)
+void HEarBufferNetwork::setAec(HAECManager *aec)
 {
     mAec = aec;
 }

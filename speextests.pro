@@ -31,7 +31,9 @@ SOURCES += \
         haudiomanager.cpp \
         hdevice.cpp \
         hearbuffer.cpp \
+        hearbuffernetwork.cpp \
         hmicbuffer.cpp \
+        hmicbuffernetwork.cpp \
         main.cpp \
         mainwindow.cpp
 
@@ -46,7 +48,9 @@ HEADERS += \
         haudiomanager.h \
         hdevice.h \
         hearbuffer.h \
+        hearbuffernetwork.h \
         hmicbuffer.h \
+        hmicbuffernetwork.h \
         mainwindow.h
 
 contains(DEFINES, HAS_HARFSDK) {

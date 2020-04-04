@@ -9,6 +9,8 @@ HAudioManager::HAudioManager() :
     mMicDevice(nullptr)
   , mMicBuffer(nullptr)
   , mEarBuffer(nullptr)
+  , mMicBufferNetwork(nullptr)
+  , mEarBufferNetwork(nullptr)
   , mEchoManager(nullptr)
   , mSampleRate(8000)
   , mMicVolume(1.0)
@@ -198,7 +200,7 @@ void HAudioManager::initWithAEC(int pFrameLenMs, int pFilterLenMs, int pInternal
         mEarDevice->setBufferSize(mEchoManager->calculateAudioBufferLength());
         mEarDevice->setVolume(mSpeakerVolume);
         connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedEar(QAudio::State)));
-        connect(mEarDevice, &QAudioOutput::notify, this, &HAudioManager::notifyEar);
+//        connect(mEarDevice, &QAudioOutput::notify, this, &HAudioManager::notifyEar);
 
         tThread->start();
 
@@ -365,3 +367,91 @@ void HAudioManager::handleStateChangedEar(QAudio::State newState)
         break;
     }
 }
+
+#if defined(HAS_HARFSDK)
+#if !defined (__ANDROID__)
+void HAudioManager::initForNetwork(HAudioClient *pClient, int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs)
+{
+    if(pClient == nullptr)
+    {
+        qDebug() << "Network client must be initialized!";
+        return;
+    }
+
+    mEchoManager = new HAECManager();
+    connect(mEchoManager, &HAECManager::onSpeechState, this, &HAudioManager::onSpeechState);
+    connect(mEchoManager, &HAECManager::onTimeDiff, this, &HAudioManager::onTimeDiff);
+
+    mEchoManager->setFrameSizeMs(pFrameLenMs);
+    mEchoManager->setFilterLenMs(pFilterLenMs);
+    mEchoManager->setInternalDelayLenMs(pInternalDelayMs);
+    mEchoManager->setSamplingRate(mSampleRate);
+
+    {
+        QAudioFormat format;
+        format.setSampleRate(mSampleRate);
+        format.setChannelCount(1);
+        format.setSampleSize(16);
+        format.setCodec("audio/pcm");
+        format.setByteOrder(QAudioFormat::LittleEndian);
+        format.setSampleType(QAudioFormat::SignedInt);
+
+        QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
+        if (!info.isFormatSupported(format)) {
+            qDebug() << "Default format not supported, trying to use the nearest.";
+            format = info.nearestFormat(format);
+        }
+
+        QThread* tThread = new QThread();
+        mMicDevice = new QAudioInput(format, tThread);
+        mMicDevice->setBufferSize(mEchoManager->calculateAudioBufferLength());
+        mMicDevice->setVolume(mMicVolume);
+        connect(mMicDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedMic(QAudio::State)));
+
+        tThread->start();
+
+        mMicBufferNetwork = new HMicBufferNetwork();
+        mMicBufferNetwork->setClient(pClient);
+
+        if(mMicBufferNetwork->open(QIODevice::WriteOnly | QIODevice::Truncate))
+            mMicDevice->start(mMicBufferNetwork);
+    }
+
+    {
+        QAudioFormat format;
+        // Set up the format, eg.
+        format.setSampleRate(mSampleRate);
+        format.setChannelCount(1);
+        format.setSampleSize(16);
+        format.setCodec("audio/pcm");
+        format.setByteOrder(QAudioFormat::LittleEndian);
+        format.setSampleType(QAudioFormat::SignedInt);
+
+        QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+        if (!info.isFormatSupported(format)) {
+            qDebug() << "Raw audio format not supported by backend, cannot play audio.";
+            return;
+        }
+
+        QThread* tThread = new QThread();
+        mEarDevice = new QAudioOutput(format, tThread);
+        mEarDevice->setNotifyInterval(100);
+        mEarDevice->setBufferSize(mEchoManager->calculateAudioBufferLength());
+        mEarDevice->setVolume(mSpeakerVolume);
+        connect(mEarDevice, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChangedEar(QAudio::State)));
+//        connect(mEarDevice, &QAudioOutput::notify, this, &HAudioManager::notifyEar);
+
+        tThread->start();
+
+        mEarBufferNetwork = new HEarBufferNetwork();
+        pClient->setEarBuffer(mEarBufferNetwork);
+
+        if(mEarBufferNetwork->open(QIODevice::ReadWrite)) //!! before is ReadOnly !!
+            mEarDevice->start(mEarBufferNetwork);
+    }
+
+    mEarBufferNetwork->setAec(mEchoManager);
+    mMicBufferNetwork->setAec(mEchoManager);
+}
+#endif
+#endif

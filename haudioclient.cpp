@@ -3,7 +3,8 @@
 #include <QDebug>
 #include <functional>
 
-HAudioClient::HAudioClient()
+HAudioClient::HAudioClient() :
+    mTargetConnection(nullptr)
 {
 
 }
@@ -27,6 +28,14 @@ void HAudioClient::init(bool pIsServer, std::string pMyName, std::string pTarget
         else
             qDebug() << "Client name(" << QString::fromStdString(mMyName) << ") or Target Name (" << QString::fromStdString(mTargetName) << ") must be set!";
     }
+}
+
+void HAudioClient::sendData(char *pdata, int pSize)
+{
+    if(mTargetConnection == nullptr)
+        return;
+
+    mTargetConnection->sendData(0, pdata, pSize);
 }
 
 void HAudioClient::initForServer()
@@ -102,14 +111,19 @@ void HAudioClient::initForClient()
 
 void HAudioClient::onDataReceived(short channelID , char* data, int size)
 {
-    qDebug() << "Data Received : " << std::string(data, size).c_str();
+    if(mEarBuffer == nullptr)
+        return;
+
+    mEarBuffer->write(data, size);
+//    dataReceived(data, size);
+//    qDebug() << "Data Received : " << std::string(data, size).c_str();
 }
 
 void HAudioClient::onConnected(HIConnectionHelper* connectionHelper, HClientInfo* fromClient)
 {
     qDebug() << "Connected to " << fromClient->name.c_str() << ".";
-    std::string msg = "Hello to " + fromClient->name + " from " + mMyName;
-    connectionHelper->sendData(0, msg.c_str(), msg.size());
+//    std::string msg = "Hello to " + fromClient->name + " from " + mMyName;
+//    connectionHelper->sendData(0, msg.c_str(), msg.size());
 }
 
 void HAudioClient::onDisconnected()
@@ -120,4 +134,9 @@ void HAudioClient::onDisconnected()
 void HAudioClient::onConnectionTimeout()
 {
     qDebug() << "Connection timeout";
+}
+
+void HAudioClient::setEarBuffer(QBuffer *earBuffer)
+{
+    mEarBuffer = earBuffer;
 }

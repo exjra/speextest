@@ -21,9 +21,17 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
+    MainWindow w;
+
     HAudioManager* mAudioManager = new HAudioManager;
 
-    MainWindow w;
+#if defined(HAS_HARFSDK)
+    #if !defined (__ANDROID__)
+        HAudioClient* mClient = new HAudioClient;
+        w.setClient(mClient);
+    #endif
+#endif
+
     w.setAec(mAudioManager);
     w.show();
 
