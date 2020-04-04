@@ -18,6 +18,7 @@ HAECManager::HAECManager() :
   , mSpeechPrev(0)
   , mFirstEar(true)
   , mFirstMic(true)
+  , mResetEnabled(false)
 {
 
 }
@@ -153,6 +154,16 @@ void HAECManager::initPrivate(int pFrameSize, int pFilterLength, int pInternalDe
     qDebug() << "---------------------------------";
 
     resetAec();
+}
+
+bool HAECManager::getResetEnabled() const
+{
+    return mResetEnabled;
+}
+
+void HAECManager::setResetEnabled(bool resetEnabled)
+{
+    mResetEnabled = resetEnabled;
 }
 
 int HAECManager::getInternalDelayLen() const

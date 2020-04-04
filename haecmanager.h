@@ -49,6 +49,9 @@ public:
 
     int calculateAudioBufferLength();
 
+    bool getResetEnabled() const;
+    void setResetEnabled(bool resetEnabled);
+
 private:
     void initPrivate(int pFrameSize, int pFilterLength, int pInternalDelayLenght);
 
@@ -58,6 +61,8 @@ private:
     spx_int16_t* mEarBuffer;
     spx_int16_t* mMicBuffer;
     spx_int16_t* mOutBuffer;
+
+    bool mResetEnabled;
 
     int mFrameSize;
     int mFrameSizeMs;

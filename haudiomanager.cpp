@@ -370,7 +370,7 @@ void HAudioManager::handleStateChangedEar(QAudio::State newState)
 
 #if defined(HAS_HARFSDK)
 #if !defined (__ANDROID__)
-void HAudioManager::initForNetwork(HAudioClient *pClient, int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs)
+void HAudioManager::initForNetwork(HAudioClient *pClient, int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs, bool pAECResetEnabled)
 {
     if(pClient == nullptr)
     {
@@ -379,6 +379,7 @@ void HAudioManager::initForNetwork(HAudioClient *pClient, int pFrameLenMs, int p
     }
 
     mEchoManager = new HAECManager();
+    mEchoManager->setResetEnabled(pAECResetEnabled);
     connect(mEchoManager, &HAECManager::onSpeechState, this, &HAudioManager::onSpeechState);
     connect(mEchoManager, &HAECManager::onTimeDiff, this, &HAudioManager::onTimeDiff);
 

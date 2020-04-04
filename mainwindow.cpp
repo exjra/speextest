@@ -245,7 +245,7 @@ void MainWindow::on_pushButton_3_clicked()
     int tFilterLen = ui->spinBox->value();
     int tInternalDelay = ui->spinBox_2->value();
 
-    mAudioManager->initForNetwork(mClient, tFrameLen, tFilterLen, tInternalDelay);
+    mAudioManager->initForNetwork(mClient, tFrameLen, tFilterLen, tInternalDelay, ui->checkBox->isChecked());
 
     ui->pushButton->setEnabled(false);
     ui->pushButton_2->setEnabled(false);
@@ -293,7 +293,7 @@ void MainWindow::on_pushButton_8_clicked()
     int tFilterLen = ui->spinBox->value();
     int tInternalDelay = ui->spinBox_2->value();
 
-    mAudioManager->initForNetwork(mClient, tFrameLen, tFilterLen, tInternalDelay);
+    mAudioManager->initForNetwork(mClient, tFrameLen, tFilterLen, tInternalDelay, ui->checkBox->isChecked());
 
     ui->pushButton->setEnabled(false);
     ui->pushButton_2->setEnabled(false);
