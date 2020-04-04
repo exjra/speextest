@@ -60,6 +60,7 @@ private:
 
     SpeexEchoState *mEchoState;
     SpeexPreprocessState *mPreprocess;
+    SpeexPreprocessState *mPreprocessMic;
 
     spx_int16_t* mEarBuffer;
     spx_int16_t* mMicBuffer;

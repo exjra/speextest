@@ -99,13 +99,25 @@ void HAECManager::initPrivate(int pFrameSize, int pFilterLength, int pInternalDe
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
 
     int vad = 1;
-    int vadProbStart = 80;
-    int vadProbContinue = 65;
+    int vadProbStart = 90;
+    int vadProbContinue = 96;
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_VAD, &vad);
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_START , &vadProbStart); //Set probability required for the VAD to go from silence to voice
     speex_preprocess_ctl(mPreprocess, SPEEX_PREPROCESS_SET_PROB_CONTINUE, &vadProbContinue); //Set probability required for the VAD to stay in the voice state (integer percent)
 
-
+    mPreprocessMic = speex_preprocess_state_init(mFrameSize, mSamplingRate);
+    int i2=1;
+    speex_preprocess_ctl(mPreprocessMic, SPEEX_PREPROCESS_SET_DENOISE, &i2);
+    i2=0;
+    speex_preprocess_ctl(mPreprocessMic, SPEEX_PREPROCESS_SET_AGC, &i2);
+    i2=8000;
+    speex_preprocess_ctl(mPreprocessMic, SPEEX_PREPROCESS_SET_AGC_LEVEL, &i2);
+    i2=0;
+    speex_preprocess_ctl(mPreprocessMic, SPEEX_PREPROCESS_SET_DEREVERB, &i2);
+    float f2=.0;
+    speex_preprocess_ctl(mPreprocessMic, SPEEX_PREPROCESS_SET_DEREVERB_DECAY, &f2);
+    f2=.0;
+    speex_preprocess_ctl(mPreprocessMic, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f2);
 
 
     //    int i=1;
@@ -254,6 +266,7 @@ void HAECManager::onCapture(const char *data)
             emit onTimeDiff(mFirstEarTime - mFirstMicTime);
     }
 
+    speex_preprocess_run(mPreprocessMic, mMicBuffer);
     speex_echo_capture(mEchoState, mMicBuffer, mOutBuffer);
 //    speex_preprocess_estimate_update(mPreprocess, mMicBuffer);
     int tRet = speex_preprocess_run(mPreprocess, mOutBuffer);
