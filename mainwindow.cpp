@@ -267,9 +267,12 @@ void MainWindow::on_pushButton_8_clicked()
         return;
 
     if(ui->lineEdit->text() == "" || ui->lineEdit_2->text() == "")
-        qDebug() << "You must set your name and target name for network client initialization";
-    else
-        mClient->init(false, ui->lineEdit->text().toStdString(), ui->lineEdit_2->text().toStdString());
+    {
+        qDebug() << "You must set your name and target name for network client initialization";return;
+        return;
+    }
+
+    mClient->init(false, ui->lineEdit->text().toStdString(), ui->lineEdit_2->text().toStdString());
 
     if(mAudioManager == nullptr)
         return;

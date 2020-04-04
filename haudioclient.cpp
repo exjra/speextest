@@ -139,7 +139,7 @@ void HAudioClient::onConnectionTimeout()
     qDebug() << "Connection timeout";
 }
 
-void HAudioClient::setEarBuffer(QBuffer *earBuffer)
+void HAudioClient::setEarBuffer(HEarBufferNetwork *earBuffer)
 {
     mEarBuffer = earBuffer;
 }

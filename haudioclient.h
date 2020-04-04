@@ -9,6 +9,8 @@
 #include <QBuffer>
 #include <QObject>
 
+#include "hearbuffernetwork.h"
+
 using namespace std::placeholders;
 using namespace harf::connection;
 
@@ -23,7 +25,7 @@ public:
 
     void sendData(char* pdata, int pSize);
 
-    void setEarBuffer(QBuffer *earBuffer);
+    void setEarBuffer(HEarBufferNetwork *earBuffer);
 
 private:
     std::string mMyName;
@@ -38,7 +40,7 @@ private:
     void onDisconnected();
     void onConnectionTimeout();
 
-    QBuffer* mEarBuffer;
+    HEarBufferNetwork* mEarBuffer;
 
 signals:
     void dataReceived(char* pData, int pSize);

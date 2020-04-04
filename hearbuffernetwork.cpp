@@ -34,10 +34,10 @@ qint64 HEarBufferNetwork::readData(char *data, qint64 maxlen)
     {
         mAec->resetAec();
 
-//        memset(data, 0, maxlen);
-//        return maxlen;
         qDebug() << "not enough data";
-        return 0;
+        memset(data, 0, maxlen);
+        return maxlen;
+//        return 0;
     }
 
     qDebug() << "hea" << mDataBuffer.length();
@@ -111,10 +111,9 @@ qint64 HEarBufferNetwork::readData(char *data, qint64 maxlen)
 qint64 HEarBufferNetwork::writeData(const char *data, qint64 len)
 {
     QMutexLocker tLocker(&mMutex);
-    QByteArray tAry(data, len);
-    mDataBuffer.append(tAry);
-    tAry.clear();
-    return len;
+    mDataBuffer.append(data, len);
+
+    return QBuffer::writeData(data, len);
 }
 
 void HEarBufferNetwork::setAec(HAECManager *aec)

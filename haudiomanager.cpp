@@ -319,7 +319,7 @@ void HAudioManager::handleStateChangedMic(QAudio::State newState)
 
     default:
         qDebug() << "(mic) other cases as appropriate. State: " << newState;
-        sourcefile.close();
+//        sourcefile.close();
         break;
     }
 }
@@ -359,7 +359,7 @@ void HAudioManager::handleStateChangedEar(QAudio::State newState)
 
     case QAudio::IdleState:
         qDebug() << "(ear) finished";
-        stopPlay();
+//        stopPlay();
         break;
 
     default:
