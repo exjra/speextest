@@ -7,8 +7,10 @@
 
 #include "haudiomanager.h"
 
-#if !defined (__ANDROID__)
-#include "haudioclient.h"
+#if defined(HAS_HARFSDK)
+    #if !defined (__ANDROID__)
+        #include "haudioclient.h"
+    #endif
 #endif
 
 int main(int argc, char *argv[])

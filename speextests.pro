@@ -24,6 +24,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+DEFINES += HAS_HARFSDK
+
 SOURCES += \
         haecmanager.cpp \
         haudiomanager.cpp \
@@ -33,8 +35,10 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp
 
-win32 {
-    SOURCES += haudioclient.cpp
+contains(DEFINES, HAS_HARFSDK) {
+    win32 {
+        SOURCES += haudioclient.cpp
+    }
 }
 
 HEADERS += \
@@ -45,8 +49,10 @@ HEADERS += \
         hmicbuffer.h \
         mainwindow.h
 
-win32 {
-    HEADERS += haudioclient.h
+contains(DEFINES, HAS_HARFSDK) {
+    win32 {
+        HEADERS += haudioclient.h
+    }
 }
 
 FORMS += \
@@ -83,6 +89,8 @@ DISTFILES += \
 ANDROID_PACKAGE_SOURCE_DIR = \
     $$PWD/android
 
-win32 {
-    include(harfsdk.pri))
+contains(DEFINES, HAS_HARFSDK) {
+    win32 {
+        include(harfsdk.pri)
+    }
 }
