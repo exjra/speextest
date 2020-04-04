@@ -52,6 +52,9 @@ public:
     bool getResetEnabled() const;
     void setResetEnabled(bool resetEnabled);
 
+    bool getDropEnabled() const;
+    void setDropEnabled(bool dropEnabled);
+
 private:
     void initPrivate(int pFrameSize, int pFilterLength, int pInternalDelayLenght);
 
@@ -63,6 +66,7 @@ private:
     spx_int16_t* mOutBuffer;
 
     bool mResetEnabled;
+    bool mDropEnabled;
 
     int mFrameSize;
     int mFrameSizeMs;

@@ -40,7 +40,7 @@ public:
 
 #if defined(HAS_HARFSDK)
 #if !defined (__ANDROID__)
-    void initForNetwork(HAudioClient* pClient, int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs, bool pAECResetEnabled);
+    void initForNetwork(HAudioClient* pClient, int pFrameLenMs, int pFilterLenMs, int pInternalDelayMs, bool pAECResetEnabled, bool pDropPackegeEnabled);
 #endif
 #endif
 

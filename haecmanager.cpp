@@ -19,6 +19,7 @@ HAECManager::HAECManager() :
   , mFirstEar(true)
   , mFirstMic(true)
   , mResetEnabled(false)
+  , mDropEnabled(false)
 {
 
 }
@@ -154,6 +155,16 @@ void HAECManager::initPrivate(int pFrameSize, int pFilterLength, int pInternalDe
     qDebug() << "---------------------------------";
 
     resetAec();
+}
+
+bool HAECManager::getDropEnabled() const
+{
+    return mDropEnabled;
+}
+
+void HAECManager::setDropEnabled(bool dropEnabled)
+{
+    mDropEnabled = dropEnabled;
 }
 
 bool HAECManager::getResetEnabled() const

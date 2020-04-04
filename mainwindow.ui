@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>311</width>
-    <height>616</height>
+    <height>642</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -120,7 +120,7 @@ Playing</string>
        <string>VoIp Operations</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QPushButton" name="pushButton_3">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -167,6 +167,13 @@ Server</string>
          </property>
         </widget>
        </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string>AEC Reset Enabled</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_8">
          <property name="sizePolicy">
@@ -180,7 +187,7 @@ Server</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QPushButton" name="pushButton_8">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -194,10 +201,10 @@ Client</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QCheckBox" name="checkBox">
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="checkBox_2">
          <property name="text">
-          <string>AEC Reset Enabled</string>
+          <string>Drop Package Enabled</string>
          </property>
         </widget>
        </item>
