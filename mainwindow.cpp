@@ -179,7 +179,6 @@ void MainWindow::on_pushButton_6_clicked()
 
 void MainWindow::onSpeechState(bool pSpeech)
 {
-    qDebug() << "hhhhhhhhhhhhhhhhhhhh" << styleSheet();
     if(pSpeech)
         setStyleSheet("background-color: rgb(0, 255, 0);");
     else
