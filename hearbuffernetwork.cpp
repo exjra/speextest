@@ -111,7 +111,9 @@ qint64 HEarBufferNetwork::readData(char *data, qint64 maxlen)
 qint64 HEarBufferNetwork::writeData(const char *data, qint64 len)
 {
     QMutexLocker tLocker(&mMutex);
-    mDataBuffer.append(data, len);
+    QByteArray tAry(data, len);
+    mDataBuffer.append(tAry);
+    tAry.clear();
     return len;
 }
 
