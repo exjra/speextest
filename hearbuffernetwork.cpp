@@ -123,7 +123,14 @@ qint64 HEarBufferNetwork::readData(char *data, qint64 maxlen)
 
 
 qint64 HEarBufferNetwork::writeData(const char *data, qint64 len)
-{
+{    
+    if(mAec == nullptr)
+    {
+        mDataBuffer.append(data, len);
+
+        return QBuffer::writeData(data, len);
+    }
+
     QMutexLocker tLocker(&mMutex);
 
     if(mAec->getDropEnabled())
