@@ -135,7 +135,7 @@ qint64 HEarBufferNetwork::writeData(const char *data, qint64 len)
 
     if(mAec->getDropEnabled())
     {
-        if(mDataBuffer.length() < mAec->getSamplingRate() * 2 * 2) //2 saniyelik tampon
+        if(mDataBuffer.length() < mAec->getSamplingRate() * 0.5 ) //0.5 saniyelik tampon
             mDataBuffer.append(data, len);
         else
         {
