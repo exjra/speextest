@@ -44,7 +44,7 @@ void HAudioClient::sendData(char *pdata, int pSize)
 
     if (mAudioSendStream != nullptr)
     {
-        if(StreamState::STATE_PLAYING == mAudioSendStream->getStreamState() || StreamState::STATE_PAUSED == mAudioSendStream->getStreamState())
+        if(HStreamState::STATE_PLAYING == mAudioSendStream->getStreamState() || HStreamState::STATE_PAUSED == mAudioSendStream->getStreamState())
             mAudioSendStream->feedStream(pdata, pSize);
     }
 }
@@ -127,7 +127,7 @@ void HAudioClient::initEncoderDecoder()
     mAudioSendStream->setOutput(HOutput::OUTPUT_TO_BUFFER);
     mAudioSendStream->setPayloadEnabled(true);
     mAudioSendStream->setStreamDataFunction(std::bind(&HAudioClient::encodedBufferReady, this, _1, _2));
-    mAudioSendStream->setAudioPropFunction(std::bind(&HAudioClient::encoderPropReceived, this, _1, _2, _3, _4));
+    mAudioSendStream->setAudioPropertyFunction(std::bind(&HAudioClient::encoderPropReceived, this, _1, _2, _3, _4));
     mAudioSendStream->initialize(mAudioCodec);
     mAudioSendStream->play();
 
@@ -136,7 +136,7 @@ void HAudioClient::initEncoderDecoder()
     mAudioReceiveStream->setOutput(HOutput::OUTPUT_TO_BUFFER);
     mAudioReceiveStream->setPayloadEnabled(true);
     mAudioReceiveStream->setRawDataFunction(std::bind(&HAudioClient::decodedBufferReady, this, _1, _2));
-    mAudioReceiveStream->setAudioPropFunction(std::bind(&HAudioClient::decoderPropReceived, this, _1, _2, _3, _4));
+    mAudioReceiveStream->setAudioPropertyFunction(std::bind(&HAudioClient::decoderPropReceived, this, _1, _2, _3, _4));
     mAudioReceiveStream->initialize(mAudioCodec);
     mAudioReceiveStream->play();
 }
@@ -147,9 +147,9 @@ void HAudioClient::encodedBufferReady(char* data, int size)
         mTargetConnection->sendData(0, data, size);
 }
 
-void HAudioClient::encoderPropReceived(int rate, std::string format, int channels, std::string layout)
+void HAudioClient::encoderPropReceived(int rate, HAudioFormat format, int channels, HAudioLayout layout)
 {
-    qDebug() << "Encoder Audio Props are, Rate: " << rate << " , Format: " << QString::fromStdString(format) << " ,Channels: " << channels << " ,Layout: " << QString::fromStdString(layout);
+    qDebug() << "Encoder Audio Props are, Rate: " << rate << " , Format: " << (int)format << " ,Channels: " << channels << " ,Layout: " << (int)layout;
 }
 
 void HAudioClient::decodedBufferReady(char *data, int size)
@@ -160,16 +160,16 @@ void HAudioClient::decodedBufferReady(char *data, int size)
     mEarBuffer->write(data, size);
 }
 
-void HAudioClient::decoderPropReceived(int rate, std::string format, int channels, std::string layout)
+void HAudioClient::decoderPropReceived(int rate, HAudioFormat format, int channels, HAudioLayout layout)
 {
-    qDebug() << "Decoder Audio Props are, Rate: " << rate << " , Format: " << QString::fromStdString(format) << " ,Channels: " << channels << " ,Layout: " << QString::fromStdString(layout);
+    qDebug() << "Decoder Audio Props are, Rate: " << rate << " , Format: " << (int)format << " ,Channels: " << channels << " ,Layout: " << (int)layout;
 }
 
 void HAudioClient::onDataReceived(short channelID , char* data, int size)
 {
     if (mAudioReceiveStream != nullptr)
     {
-        if(StreamState::STATE_PLAYING == mAudioReceiveStream->getStreamState() || StreamState::STATE_PAUSED == mAudioReceiveStream->getStreamState())
+        if(HStreamState::STATE_PLAYING == mAudioReceiveStream->getStreamState() || HStreamState::STATE_PAUSED == mAudioReceiveStream->getStreamState())
             mAudioReceiveStream->feedStream(data, size);
     }
 }

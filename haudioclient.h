@@ -57,10 +57,10 @@ private:
     HIAudioReceiveStream* mAudioReceiveStream = nullptr;
 
     void encodedBufferReady(char *data, int size);
-    void encoderPropReceived(int rate, std::string format, int channels, std::string layout);
+    void encoderPropReceived(int rate, HAudioFormat format, int channels, HAudioLayout layout);
 
     void decodedBufferReady(char *data, int size);
-    void decoderPropReceived(int rate, std::string format, int channels, std::string layout);
+    void decoderPropReceived(int rate, HAudioFormat format, int channels, HAudioLayout layout);
 
 signals:
     void dataReceived(char* pData, int pSize);

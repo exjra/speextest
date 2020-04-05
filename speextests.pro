@@ -95,7 +95,20 @@ ANDROID_PACKAGE_SOURCE_DIR = \
 
 contains(DEFINES, HAS_HARFSDK) {
     win32 {
-        include(harfsdk.pri)
+        include($$(HARF_DIR)/lib/include/path.pri)
+        include($$(HARF_DIR)/lib/include/platform.pri)
+        include($$(HARF_DIR)/lib/include/harfcore.pri)
+        include($$(HARF_DIR)/lib/include/harfprotobuf.pri)
+        include($$(HARF_DIR)/lib/include/cpprestsdk.pri)
+        include($$(HARF_DIR)/lib/include/harfutils.pri)
+        include($$(HARF_DIR)/lib/include/stream.pri)
+        include($$(HARF_DIR)/lib/include/harfconnection.pri)
+        include($$(HARF_DIR)/lib/include/cpprestsdk.pri)
+        include($$(HARF_DIR)/lib/include/boost.pri)
+        include($$(HARF_DIR)/lib/include/enet.pri)
+        include($$(HARF_DIR)/lib/include/pjproject.pri)
+        include($$(HARF_DIR)/lib/include/openssl.pri)
+        include($$(HARF_DIR)/lib/include/breakpad.pri)
     }
 }
 
